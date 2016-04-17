@@ -18,12 +18,13 @@ def inch_to_mm(in_inches):
 NO2_SCREW_R=1.1
 M3_TAPPED=1.2
 M3=1.5
-MOTOR_WIDTH=12
-CASTOR_SPACING=inch_to_mm(0.58)
-CR123A_WIDTH=18
+MOTOR_WIDTH=12.0
+CASTER_SPACING=26.0
+CR123A_WIDTH=18.0
 CR123A_LENGTH=43.2
 CR123A_FORWARD=MOTOR_WIDTH/2+1+CR123A_WIDTH/2
-POLOLU_CASTOR_R=16/2
+POLOLU_CASTER_R=16/2
+STANDOFF_HEIGHT=25
 
 def corners(d, o=None):
     return ([p*d for p in v]  for v in CORNERS)
@@ -82,35 +83,51 @@ def chassis(radius=50, arch_width=5, arch_length=35):
 
     def nucleo():
         return color(Red)(left(25)(forward(CR123A_FORWARD+CR123A_WIDTH/2+1)(cube([50,18.5,16.5], False))))
-    
-    def pololu_castor_mount():
-        """See https://www.pololu.com/picture/view/0J474"""
-        screw_hole = circle(NO2_SCREW_R)
-        return forward(radius-POLOLU_CASTOR_R-1)(
-            circle(POLOLU_CASTOR_R) +
-            left(CASTOR_SPACING/2)(screw_hole) +
-            right(CASTOR_SPACING/2)(screw_hole))
 
-    def castor_mount():
+    def pololu_caster_screw_holes():
+        screw_hole = circle(M3_TAPPED)
+        return (left(CASTER_SPACING/2)(screw_hole) +
+                right(CASTER_SPACING/2)(screw_hole))
+    
+    def pololu_caster_holes():
+        """See https://www.pololu.com/picture/view/0J474"""
+        return forward(radius-POLOLU_CASTER_R-1)(
+            circle(POLOLU_CASTER_R) +
+            pololu_caster_screw_holes())
+
+    def caster_hole():
         """I've bought some miniature 'ball transfer units' on ebay. They
         are push fit. The total diameter is 16mm, and the body diameter is 13mm.
         The total hight is 10mm, so it won't protrude through the hole, but I will
         need to provide 4mm of packing. I have 16mm delrin rod, but need a 13mm
         drill bit for the hole"""
         return forward((radius-5-6.5))(circle(6.5, True))
-    
-    def castor_mounts():
-        front = pololu_castor_mount()
-        left_back = rotate(135)(front)
-        right_back = rotate(-135)(front)
-        return front + left_back + right_back;
 
+    def for_each_caster(x):
+        return union()(*(rotate(a)(x) for a in (0, 135, -135)))
+    
+    def caster_holes():
+        return for_each_caster(pololu_caster_holes())
+
+    def pololu_caster_mount():
+        return forward(radius-POLOLU_CASTER_R-1)(up(1.5+1+2)(
+            square([CASTER_SPACING+8,8], True) -
+            pololu_caster_screw_holes()))
+
+    def pololu_caster_mounts():
+        return for_each_caster(pololu_caster_mount())
+    
     def pen_hole():
         return circle(5, True)
 
+    def for_each_standoff(x):
+        return union()(*(rotate(angle)(forward(radius - 3)(x)) for angle in (+45, -45, 150, 210)))
+    
     def standoff_holes():
-        hole = forward(radius - 5)(circle(1.5,True))
-        return union()(*(rotate(angle)(hole) for angle in [i*90+45 for i in range(4)]))
+        return for_each_standoff(circle(M3))
+
+    def standoffs():
+        return for_each_standoff(cylinder(r=3,h=STANDOFF_HEIGHT))
     
     def arduino_mount():
         """The plan is to use a nucleo board, which has arduino mounting screw points"""
@@ -133,12 +150,13 @@ def chassis(radius=50, arch_width=5, arch_length=35):
             cr123a_batteries() +
             circle(radius) -
             motor_cutouts() -
-            castor_mounts() -
+            caster_holes() -
             standoff_holes() -
             cr123a_battery_holes() -
             pen_hole() +
             wheels() +
-            nucleo())
+            pololu_caster_mounts() +
+            standoffs())
 
 
 def assembly():
