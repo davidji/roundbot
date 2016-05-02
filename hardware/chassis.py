@@ -16,15 +16,18 @@ def inch_to_mm(in_inches):
         return [ inch_to_mm(x) for x in i ]
 
 NO2_SCREW_R=1.1
-M3_TAPPED=1.2
+M3_TAPPED=1.25
 M3=1.5
 MOTOR_WIDTH=12.0
 CASTER_SPACING=26.0
 CR123A_WIDTH=18.0
 CR123A_LENGTH=43.2
 CR123A_FORWARD=MOTOR_WIDTH/2+1+CR123A_WIDTH/2
-POLOLU_CASTER_R=16/2
+POLOLU_CASTER_D=16.0
+POLOLU_CASTER_R=POLOLU_CASTER_D/2
 STANDOFF_HEIGHT=25
+BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+CR123A_WIDTH
+
 
 def corners(d, o=None):
     return ([p*d for p in v]  for v in CORNERS)
@@ -81,6 +84,10 @@ def chassis(radius=50, arch_width=5, arch_length=35):
         backb = mirror([0,1,0])(frontb)
         return frontb + backb
 
+    def cr123a_cutout():
+        cutout = square([CR123A_LENGTH,CR123A_WIDTH], True)
+        return forward(CR123A_FORWARD)(cutout) + back(CR123A_FORWARD)(cutout);
+    
     def nucleo():
         return color(Red)(left(25)(forward(CR123A_FORWARD+CR123A_WIDTH/2+1)(cube([50,18.5,16.5], False))))
 
@@ -91,7 +98,7 @@ def chassis(radius=50, arch_width=5, arch_length=35):
     
     def pololu_caster_holes():
         """See https://www.pololu.com/picture/view/0J474"""
-        return forward(radius-POLOLU_CASTER_R-1)(
+        return (
             circle(POLOLU_CASTER_R) +
             pololu_caster_screw_holes())
 
@@ -104,15 +111,15 @@ def chassis(radius=50, arch_width=5, arch_length=35):
         return forward((radius-5-6.5))(circle(6.5, True))
 
     def for_each_caster(x):
-        return union()(*(rotate(a)(x) for a in (0, 135, -135)))
+        return union()(*(rotate(a)(forward(radius-POLOLU_CASTER_R-1)(x)) for a in (0, 180)))
     
     def caster_holes():
         return for_each_caster(pololu_caster_holes())
 
     def pololu_caster_mount():
-        return forward(radius-POLOLU_CASTER_R-1)(up(1.5+1+2)(
+        return up(1.5+1+2)(
             square([CASTER_SPACING+8,8], True) -
-            pololu_caster_screw_holes()))
+            pololu_caster_screw_holes())
 
     def pololu_caster_mounts():
         return for_each_caster(pololu_caster_mount())
@@ -121,11 +128,20 @@ def chassis(radius=50, arch_width=5, arch_length=35):
         return circle(5, True)
 
     def for_each_standoff(x):
-        return union()(*(rotate(angle)(forward(radius - 3)(x)) for angle in (+45, -45, 150, 210)))
+        return union()(*(rotate(angle)(forward(radius - 3)(x)) for angle in (+45, -45, +135, -135)))
     
     def standoff_holes():
         return for_each_standoff(circle(M3))
 
+    def pololu_qtr_3a_holes():
+        hole = circle(M3_TAPPED, True)
+        spacing=inch_to_mm(1.05)
+        QTR_3A_FORWARD= radius - POLOLU_CASTER_D - 1 - inch_to_mm(0.3)/2
+        return forward(QTR_3A_FORWARD)(
+            back(inch_to_mm(0.10))(square([1.1*inch_to_mm(0.4), 1.1*inch_to_mm(0.1)], True)) +
+            left(spacing/2)(hole) +
+            right(spacing/2)(hole))
+    
     def standoffs():
         return for_each_standoff(cylinder(r=3,h=STANDOFF_HEIGHT))
     
@@ -145,18 +161,27 @@ def chassis(radius=50, arch_width=5, arch_length=35):
         rwheel = up(5)(right(radius-arch_width+5)(rotate([0,90,0])(cylinder(r=16,h=7,center=True))))
         lwheel = mirror([1,0,0])(rwheel)
         return rwheel + lwheel
-    
-    return (motors() +
-            cr123a_batteries() +
+
+    def chassis():
+        return (
             circle(radius) -
             motor_cutouts() -
             caster_holes() -
             standoff_holes() -
-            cr123a_battery_holes() -
-            pen_hole() +
+            pololu_qtr_3a_holes() -
+            # cr123a_battery_holes() -
+            cr123a_cutout() -
+            pen_hole())
+
+    def extras():
+        return (motors() +
+            cr123a_batteries() +
+             +
             wheels() +
             pololu_caster_mounts() +
             standoffs())
+    
+    return chassis() # + extras()
 
 
 def assembly():
