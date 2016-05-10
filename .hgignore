@@ -3,3 +3,12 @@ syntax: glob
 *.pyc
 hardware/chassis.scad
 hardware/chassis.dxf
+
+syntax: regexp
+^hardware/chassis\.scad$
+syntax: regexp
+^hardware/chassis\.stl$
+syntax: regexp
+^hardware/printedchassis\.scad$
+syntax: regexp
+^hardware/printedchassis\.stl$
