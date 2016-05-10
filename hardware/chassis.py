@@ -7,30 +7,36 @@ from solid import *
 from solid.utils import *
 from solid import screw_thread
 
-def inch_to_mm(in_inches):
-    try:
-        i = iter(in_inches)
-    except TypeError:
-        return in_inches*25.4
-    else:
-        return [ inch_to_mm(x) for x in i ]
+from pololu.caster import *
 
-NO2_SCREW_R=1.1
+
+ABIT=0.1
+FA=0.1
+FS=0.5
+
 M3_TAPPED=1.25
 M3=1.5
 MOTOR_WIDTH=12.0
 CASTER_SPACING=26.0
 CR123A_WIDTH=18.0
 CR123A_LENGTH=43.2
+CR123A_HEIGHT=18.0
 CR123A_FORWARD=MOTOR_WIDTH/2+1+CR123A_WIDTH/2
-POLOLU_CASTER_D=16.0
-POLOLU_CASTER_R=POLOLU_CASTER_D/2
 STANDOFF_HEIGHT=25
 BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+CR123A_WIDTH
+CASTER_FORWARD=BATTERY_OUTSIDE_EDGE+2
 
+def cr123a_battery_holes(tapped=False):
+    return (
+        left(CR123A_LENGTH/2-2.6)(forward(8.2)(circle(0.9))) +
+        left(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
+        right(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
+        left(12.1)(circle(tapped and M3_TAPPED or M3, True)) +
+        right(12.1)(circle(tapped and M3_TAPPED or M3, True)))
 
 def corners(d, o=None):
     return ([p*d for p in v]  for v in CORNERS)
+
 
 # Height of platform: the wheels are 16mm, less 3mm for the chassis
 # plate, and 5mm half the height of the motor = 8mm
@@ -42,7 +48,16 @@ def corners(d, o=None):
 # I could leave the possibility of batteries on the underside open too,
 # then a single chassis plate might well be enough.
 
-def chassis(radius=50, arch_width=5, arch_length=35):
+def chassis(radius=50.0,
+            arch_width=10.0,
+            arch_length=35.0,
+            caster=metal_3_8,
+            min_wall = 2.0,
+            tapped=False):
+
+    def m3():
+        return circle(tapped and M3_TAPPED or M3, True)
+
     def wheel_arch(width=arch_width, length=arch_length):
         return right(radius-width/2)(square([width, length], True))
 
@@ -70,81 +85,74 @@ def chassis(radius=50, arch_width=5, arch_length=35):
     # the chassis. The index hole is mean to be M1.8. No doubt a 2mm hole will do
     # From the Spiratronics provided datasheet:
     # http://www.spiratronics.com/data/3785.pdf
-    def cr123a_battery_holes():
-        holes = (
-            left(CR123A_LENGTH/2-2.6)(forward(8.2)(circle(0.9))) +
-            left(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
-            right(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
-            left(12.1)(circle(M3_TAPPED, True)) +
-            right(12.1)(circle(M3_TAPPED, True)))
         return forward(CR123A_FORWARD)(holes) + back(CR123A_FORWARD)(rotate(180)(holes))
-    
+
     def cr123a_batteries():
-        frontb = color(Green)(up(7)(forward(CR123A_FORWARD)(cube([CR123A_LENGTH,CR123A_WIDTH,14], True))))
+        frontb = color(Green)(up(7)(forward(CR123A_FORWARD)(cube([CR123A_LENGTH,CR123A_WIDTH,CR123A_HEIGHT], True))))
         backb = mirror([0,1,0])(frontb)
         return frontb + backb
 
     def cr123a_cutout():
         cutout = square([CR123A_LENGTH,CR123A_WIDTH], True)
-        return forward(CR123A_FORWARD)(cutout) + back(CR123A_FORWARD)(cutout);
-    
+        return forward(CR123A_FORWARD)(cutout) + back(CR123A_FORWARD)(cutout)
+
     def nucleo():
         return color(Red)(left(25)(forward(CR123A_FORWARD+CR123A_WIDTH/2+1)(cube([50,18.5,16.5], False))))
 
-    def pololu_caster_screw_holes():
-        screw_hole = circle(M3_TAPPED)
-        return (left(CASTER_SPACING/2)(screw_hole) +
-                right(CASTER_SPACING/2)(screw_hole))
-    
+    def caster_mount_screw_holes():
+        screw_hole = m3()
+        screw_offset = caster.d[0]/2 + 3
+        return (left(screw_offset)(screw_hole) +
+                right(screw_offset)(screw_hole))
+
     def pololu_caster_holes():
-        """See https://www.pololu.com/picture/view/0J474"""
         return (
-            circle(POLOLU_CASTER_R) +
-            pololu_caster_screw_holes())
+            caster.outline() +
+            caster_mount_screw_holes())
 
     def caster_hole():
         """I've bought some miniature 'ball transfer units' on ebay. They
         are push fit. The total diameter is 16mm, and the body diameter is 13mm.
-        The total hight is 10mm, so it won't protrude through the hole, but I will
+        The total height is 10mm, so it won't protrude through the hole, but I will
         need to provide 4mm of packing. I have 16mm delrin rod, but need a 13mm
         drill bit for the hole"""
         return forward((radius-5-6.5))(circle(6.5, True))
 
     def for_each_caster(x):
-        return union()(*(rotate(a)(forward(radius-POLOLU_CASTER_R-1)(x)) for a in (0, 180)))
-    
+        return union()(*(rotate(a)(forward(CASTER_FORWARD + caster.d[1]/2)(x)) for a in (0, 180)))
+
     def caster_holes():
         return for_each_caster(pololu_caster_holes())
 
     def pololu_caster_mount():
         return up(1.5+1+2)(
             square([CASTER_SPACING+8,8], True) -
-            pololu_caster_screw_holes())
+            caster_mount_screw_holes())
 
     def pololu_caster_mounts():
         return for_each_caster(pololu_caster_mount())
-    
+
     def pen_hole():
         return circle(5, True)
 
     def for_each_standoff(x):
         return union()(*(rotate(angle)(forward(radius - 3)(x)) for angle in (+45, -45, +135, -135)))
-    
+
     def standoff_holes():
         return for_each_standoff(circle(M3))
 
     def pololu_qtr_3a_holes():
-        hole = circle(M3_TAPPED, True)
+        hole = m3()
         spacing=inch_to_mm(1.05)
-        QTR_3A_FORWARD= radius - POLOLU_CASTER_D - 1 - inch_to_mm(0.3)/2
+        QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + 2 + inch_to_mm(0.3)/2
         return forward(QTR_3A_FORWARD)(
             back(inch_to_mm(0.10))(square([1.1*inch_to_mm(0.4), 1.1*inch_to_mm(0.1)], True)) +
             left(spacing/2)(hole) +
             right(spacing/2)(hole))
-    
+
     def standoffs():
         return for_each_standoff(cylinder(r=3,h=STANDOFF_HEIGHT))
-    
+
     def arduino_mount():
         """The plan is to use a nucleo board, which has arduino mounting screw points"""
         # coordinates are in inches as per arduino spec, converted in loop
@@ -162,7 +170,7 @@ def chassis(radius=50, arch_width=5, arch_length=35):
         lwheel = mirror([1,0,0])(rwheel)
         return rwheel + lwheel
 
-    def chassis():
+    def outline():
         return (
             circle(radius) -
             motor_cutouts() -
@@ -173,6 +181,9 @@ def chassis(radius=50, arch_width=5, arch_length=35):
             cr123a_cutout() -
             pen_hole())
 
+    def chassis():
+        return linear_extrude(height=3)(outline())
+
     def extras():
         return (motors() +
             cr123a_batteries() +
@@ -180,7 +191,7 @@ def chassis(radius=50, arch_width=5, arch_length=35):
             wheels() +
             pololu_caster_mounts() +
             standoffs())
-    
+
     return chassis() # + extras()
 
 
@@ -193,4 +204,4 @@ if __name__ == '__main__':
  
     a = assembly()
     print("%(__file__)s: SCAD file written to: \n%(file_out)s"%vars())
-    scad_render_to_file( a, file_out, include_orig_code=True)
+    scad_render_to_file( a, file_out, file_header='$fa = %s; $fs = %s;' % (FA, FS), include_orig_code=True)
