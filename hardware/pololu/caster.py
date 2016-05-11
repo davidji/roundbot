@@ -1,6 +1,8 @@
 from solid import *
 from solid.utils import *
-from pololu import *
+from util import inch_to_mm
+from fixings import NO2
+from util import radial
 
 class metal_3_8:
     d=[inch_to_mm(0.75), inch_to_mm(0.5), inch_to_mm(0.4)]
@@ -19,5 +21,4 @@ class metal_3_8:
 
     @staticmethod
     def screw_holes():
-        hole = circle(r=NO2_SCREW_R)
-        return left(metal_3_8.screw_spacing/2)(hole) + right(metal_3_8.screw_spacing/2)(hole)
+        return radial(metal_3_8.screw_spacing/2, [-90, 90], NO2.cut())

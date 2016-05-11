@@ -7,10 +7,8 @@ from solid.utils import *
 from solid import screw_thread
 
 from chassis import *
+from util import *
 
-def tube(r, h, ir = None, t = None, center=False, hole=False):
-    return (cylinder(r=r, h=h, center=center) -
-            down(ABIT)(cylinder(r=(t and r - t or ir), h=h+2*ABIT)))
 
 def base_cube(d):
     return up(d[2]/2)(cube(d, True))

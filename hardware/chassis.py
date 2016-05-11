@@ -8,31 +8,23 @@ from solid.utils import *
 from solid import screw_thread
 
 from pololu.caster import *
+from batteries import cr123a
+from fixings import M3, NO2
+from util import *
+from raspberrypi import aplus
 
 
 ABIT=0.1
 FA=0.1
 FS=0.5
 
-M3_TAPPED=1.25
-M3=1.5
 MOTOR_WIDTH=12.0
 CASTER_SPACING=26.0
-CR123A_WIDTH=18.0
-CR123A_LENGTH=43.2
-CR123A_HEIGHT=18.0
-CR123A_FORWARD=MOTOR_WIDTH/2+1+CR123A_WIDTH/2
+CR123A_FORWARD=MOTOR_WIDTH/2+1+cr123a.d[1]/2
 STANDOFF_HEIGHT=25
-BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+CR123A_WIDTH
+BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+cr123a.d[1]
 CASTER_FORWARD=BATTERY_OUTSIDE_EDGE+2
 
-def cr123a_battery_holes(tapped=False):
-    return (
-        left(CR123A_LENGTH/2-2.6)(forward(8.2)(circle(0.9))) +
-        left(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
-        right(CR123A_LENGTH/2-2.6)(circle(M3, True)) +
-        left(12.1)(circle(tapped and M3_TAPPED or M3, True)) +
-        right(12.1)(circle(tapped and M3_TAPPED or M3, True)))
 
 def corners(d, o=None):
     return ([p*d for p in v]  for v in CORNERS)
@@ -55,8 +47,9 @@ def chassis(radius=50.0,
             min_wall = 2.0,
             tapped=False):
 
+
     def m3():
-        return circle(tapped and M3_TAPPED or M3, True)
+        return M3.cut(tapped)
 
     def wheel_arch(width=arch_width, length=arch_length):
         return right(radius-width/2)(square([width, length], True))
@@ -65,8 +58,7 @@ def chassis(radius=50.0,
     # an aluminium angle on the underside to form a bracket for the motor
     # that allows the motor to be flush with the chassis.
     def motor_mount():
-        """https://www.pololu.com/product/989, the screws are 2-56 with diameter 2.184mm"""
-        hole = circle(NO2_SCREW_R)
+        hole = NO2.cut()
         return right(radius-arch_width-4.25)(forward(9)(hole) + back(9)(hole))
 
     def motor_cutouts():
@@ -79,12 +71,6 @@ def chassis(radius=50.0,
         rightm = mirror([1,0,0])(leftm)
         return leftm + rightm
 
-    # this is a specific CR123A battery holder from Spiratronics
-    # This is intended to be PCB mount. I'm just going to solder wires onto
-    # the tables, wrap them in shrinkwrap, and they will go though holes in
-    # the chassis. The index hole is mean to be M1.8. No doubt a 2mm hole will do
-    # From the Spiratronics provided datasheet:
-    # http://www.spiratronics.com/data/3785.pdf
         return forward(CR123A_FORWARD)(holes) + back(CR123A_FORWARD)(rotate(180)(holes))
 
     def cr123a_batteries():
@@ -96,14 +82,8 @@ def chassis(radius=50.0,
         cutout = square([CR123A_LENGTH,CR123A_WIDTH], True)
         return forward(CR123A_FORWARD)(cutout) + back(CR123A_FORWARD)(cutout)
 
-    def nucleo():
-        return color(Red)(left(25)(forward(CR123A_FORWARD+CR123A_WIDTH/2+1)(cube([50,18.5,16.5], False))))
-
-    def caster_mount_screw_holes():
-        screw_hole = m3()
-        screw_offset = caster.d[0]/2 + 3
-        return (left(screw_offset)(screw_hole) +
-                right(screw_offset)(screw_hole))
+    def caster_mount_screw_holes(tapped=tapped):
+        return radial(caster.d[0]/2 + 3, [90, -90], M3.cut(tapped))
 
     def pololu_caster_holes():
         return (
@@ -135,12 +115,6 @@ def chassis(radius=50.0,
     def pen_hole():
         return circle(5, True)
 
-    def for_each_standoff(x):
-        return union()(*(rotate(angle)(forward(radius - 3)(x)) for angle in (+45, -45, +135, -135)))
-
-    def standoff_holes():
-        return for_each_standoff(circle(M3))
-
     def pololu_qtr_3a_holes():
         hole = m3()
         spacing=inch_to_mm(1.05)
@@ -149,9 +123,6 @@ def chassis(radius=50.0,
             back(inch_to_mm(0.10))(square([1.1*inch_to_mm(0.4), 1.1*inch_to_mm(0.1)], True)) +
             left(spacing/2)(hole) +
             right(spacing/2)(hole))
-
-    def standoffs():
-        return for_each_standoff(cylinder(r=3,h=STANDOFF_HEIGHT))
 
     def arduino_mount():
         """The plan is to use a nucleo board, which has arduino mounting screw points"""
@@ -170,33 +141,61 @@ def chassis(radius=50.0,
         lwheel = mirror([1,0,0])(rwheel)
         return rwheel + lwheel
 
-    def outline():
+    def connecting_screw_holes():
+        return radial(radius - 3, [+45, -45, +135, -135], M3.cut())
+
+    def base():
         return (
             circle(radius) -
             motor_cutouts() -
             caster_holes() -
-            standoff_holes() -
+            connecting_screw_holes() -
             pololu_qtr_3a_holes() -
-            # cr123a_battery_holes() -
-            cr123a_cutout() -
+            radial(CR123A_FORWARD, [0, 180], cr123a.cut_opening()) -
+            radial(0, [ 0, 180], 
+                   radial(radius-5, [ 30, -30 ], m3()) +
+                   radial(radius-10, [30, -30, 45, -45 ], m3())) -
+            radial(0, [180],
+                   radial(radius-5, [ 15, 0, -15 ], m3())) -
             pen_hole())
 
+    def lid():
+        return (circle(radius) -
+                aplus.cut_holes() -
+                radial(0, [0,180], wheel_arch()) -
+                connecting_screw_holes() -
+                radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -
+                radial(35, [0,90,180,270], square([16,3], True)))
+
     def chassis():
-        return linear_extrude(height=3)(outline())
+        return (linear_extrude(height=3)(base()) + 
+                tube(r=radius, t=1.5, h=cr123a.d[2] + 3) +
+                up(3)(radial(radius - 3, [+45, -45, +135, -135], 
+                             tube(r=3, t=1.5, h=cr123a.d[2]))) +
+                forward(2*radius+min_wall)(linear_extrude(height=3)(lid())))
 
     def extras():
         return (motors() +
             cr123a_batteries() +
-             +
             wheels() +
             pololu_caster_mounts() +
             standoffs())
 
-    return chassis() # + extras()
+    def caster_plinth():
+        return (square([caster.d[0]+12, caster.d[1]+2*min_wall], True) -
+                caster_mount_screw_holes(False) -
+                caster.screw_holes())
+
+    def plates():
+        return (base() + 
+                radial(CR123A_FORWARD, [0, 180], caster_plinth()) +
+                forward(2*radius+min_wall)(lid()))
+
+    return plates() # + extras()
 
 
 def assembly():
-    return chassis()
+    return chassis(tapped=True)
  
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir
