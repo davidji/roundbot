@@ -12,3 +12,7 @@ syntax: regexp
 ^hardware/printedchassis\.scad$
 syntax: regexp
 ^hardware/printedchassis\.stl$
+syntax: regexp
+^\.pioenvs$
+syntax: regexp
+^lib/readme\.txt$

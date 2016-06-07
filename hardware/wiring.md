@@ -38,7 +38,7 @@ PA1  | A1  | ADC1_IN2, TIM2_CH2, TSC_G1_IO2, USART2_RTS_DE, TIM15_CH1N
 PA0  | A0  | ADC1_IN1, TIM2_CH1/TI M2_ETR, TSC_G1_IO1, USART2_CTS
 PB3  | D13 | SWO, TIM2_CH2, TSC_G5_IO1, SPI1_SCK, USART2_TX, TIM3_ETRADC2_IN12, COMP4_INM, TSC_G3_IO4
 
-TIM3: Motor control
+TIM2,TIM3: Motor control
 TIM1: WS2812
 ADC1: Rotary encoders
 ADC2: Reflectance sensors
@@ -46,19 +46,19 @@ SPI1: RF24
 
 MCU  | MBED| Function | Used
 -----|-----|----------|----------
-PA9  | D1  | TSC_G4_IO1, TIM1_CH2, USART1_TX, TIM15_BKIN, TIM2_CH3 |
-PA10 | D0  | TIM17_BKIN, TSC_G4_IO2, TIM1_CH3, USART1_RX, COMP6_OUT, TIM2_CH4 |
-PA12 | D2  | TIM16_CH1, TIM1_CH2N, USART1_RTS_DE, COMP2_OUT, CAN_TX, TIM1_ETR |
-PB0  | D3  | TIM3_CH3 | Motor L PWM
+PA9  | D1  | TIM2_CH3 | Motor R IN1
+PA10 | D0  | TIM2_CH4 | Motor R IN2
+PA12 | D2  | Unused
+PB0  | D3  | TIM3_CH3 | Motor L IN1
 PB7  | D4  | USART1_RX | Serial RX
 PB6  | D5  | USART1_TX | Serial TX
-PB1  | D6  | TIM3_CH4 | Motor R PWN
-PF0  | D7  | GPIO | Motor R A
-PF1  | D8  | GPIO | Motor R B
-PA8  | D9  | GPIO | Motor L A
-PA11 | D10 | GPIO | Motor L B
-PB5  | D11 | SPI1_MOSI | RF24
-PB4  | D12 | SPI1_MISO | RF24
+PB1  | D6  | TIM3_CH4 | Motor L IN2
+PF0  | D7  | GPIO | Motor L EN
+PF1  | D8  | GPIO | Motor R EN
+PA8  | D9  | 
+PA11 | D10 | 
+PB5  | D11 | SPI_MOSI | RF24 MOSI
+PB4  | D12 | SPI_MISO | RF24 MISO
 PA2  | A7  | ADC1_IN3, COMP2_INM, TIM2_CH3, TSC_G1_IO3, USART2_TX, COMP2_OUT, TIM15_CH1 |
 PA7  | A6  | ADC2_IN4 | Rotary encoder R2
 PA6  | A5  | ADC2_IN3 | Rotary encoder R1
@@ -67,5 +67,5 @@ PA4  | A3  | ADC2_IN1 | Rotary encoder L1
 PA3  | A2  | ADC1_IN4 | Reflectance 3
 PA1  | A1  | ADC1_IN2 | Reflectance 2
 PA0  | A0  | ADC1_IN1 | Reflectance 1
-PB3  | D13 | SPI1_SCK | RF24
+PB3  | D13 | SPI1_SCK | RF24 SCK
 

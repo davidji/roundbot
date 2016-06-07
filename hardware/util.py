@@ -26,3 +26,8 @@ def corners(d, x, center=True):
 def tube(r, h, ir = None, t = None, center=False):
     return (cylinder(r=r, h=h, center=center) -
             down(ABIT)(cylinder(r=(t and r - t or ir), h=h+2*ABIT)))
+
+def pipe(r, h, ir = None, t = None, center=False):
+    """A tube but with first class space"""
+    return (cylinder(r=r, h=h, center=center) -
+            hole()(down(ABIT)(cylinder(r=(t and r - t or ir), h=h+2*ABIT))))

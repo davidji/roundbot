@@ -41,7 +41,7 @@ def corners(d, o=None):
 # then a single chassis plate might well be enough.
 
 def chassis(radius=50.0,
-            arch_width=10.0,
+            arch_width=12.0,
             arch_length=35.0,
             caster=metal_3_8,
             min_wall = 2.0,
@@ -159,7 +159,7 @@ def chassis(radius=50.0,
                    radial(radius-5, [ 15, 0, -15 ], m3())) -
             pen_hole())
 
-    def lid():
+    def lid_cut():
         return (circle(radius) -
                 aplus.cut_holes() -
                 radial(0, [0,180], wheel_arch()) -
@@ -167,12 +167,40 @@ def chassis(radius=50.0,
                 radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -
                 radial(35, [0,90,180,270], square([16,3], True)))
 
+    def lid():
+        return (linear_extrude(height=3)(lid_cut()) -
+                rotate_extrude()(translate([-radius, 0])(polygon(([-ABIT,-ABIT],[3,-ABIT],[-ABIT,3])))) +
+                radial(radius - 3, [+45, -45, +135, -135], (cylinder(r=3,h=3))))
+
+    def body_cross_section(height):
+       return translate([radius-1,0])(
+            left(2)(square([3,3])) +
+            square([1, height]) +
+            union()(*(translate([0, y])(polygon([[0,-1],[-1, 0],[0,1]])) 
+                      for y in range(1, height, 5))) +
+            translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
+
+    def body(height=21):
+        vstrut = (translate([radius-3,-1])(cube([2.5,2,height])))
+        return (rotate_extrude()(body_cross_section(height)) +
+                union()(*(rotate(a)(vstrut) for a in range(0,360,15) if (a - 45) % 90)) -
+                radial(radius - 3, [+45, -45, +135, -135], up(height)(cylinder(r=3,h=3))))
+
+    def caster_plinth_cut():
+        return (square([caster.d[0]+12, caster.d[1]+2*min_wall], True) -
+                caster_mount_screw_holes(False) -
+                caster.screw_holes())
+
+    def hc_sr04_mount():
+        return translate([0, radius, 15])(rotate([90,0,0])(radial(18, [-90,90], pipe(r=10,t=2,h=8))))
+
     def chassis():
         return (linear_extrude(height=3)(base()) + 
-                tube(r=radius, t=1.5, h=cr123a.d[2] + 3) +
+                body() +
                 up(3)(radial(radius - 3, [+45, -45, +135, -135], 
-                             tube(r=3, t=1.5, h=cr123a.d[2]))) +
-                forward(2*radius+min_wall)(linear_extrude(height=3)(lid())))
+                             pipe(r=3, t=1.5, h=cr123a.d[2]))) +
+                forward(2*radius+min_wall)(lid()) +
+                linear_extrude(height=3)(radial(CR123A_FORWARD, [0, 180], caster_plinth_cut())))
 
     def extras():
         return (motors() +
@@ -181,21 +209,16 @@ def chassis(radius=50.0,
             pololu_caster_mounts() +
             standoffs())
 
-    def caster_plinth():
-        return (square([caster.d[0]+12, caster.d[1]+2*min_wall], True) -
-                caster_mount_screw_holes(False) -
-                caster.screw_holes())
-
     def plates():
         return (base() + 
-                radial(CR123A_FORWARD, [0, 180], caster_plinth()) +
+                radial(CR123A_FORWARD, [0, 180], caster_plinth_cut()) +
                 forward(2*radius+min_wall)(lid()))
 
-    return plates() # + extras()
+    return chassis() # + extras()
 
 
 def assembly():
-    return chassis(tapped=True)
+    return chassis()
  
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir
