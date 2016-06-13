@@ -1,5 +1,4 @@
 #include "mbed.h"
-#include "rtos.h"
 #include "motor.h"
 #include "wiring.h"
 
@@ -20,20 +19,20 @@ void motorsTestStep(float left, float right) {
     leftEncoder.read();
     rightEncoder.read();
     drive(left, right);
-    wait(1);
+    wait(1.0);
     long left_rotation = leftEncoder.read();
     long right_rotation = rightEncoder.read();
     long s = testTimer.read_ms();
-    printf("rotation: %06ld, %06ld rate: %d, %d time: %ld\n",
+    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld\n",
             left_rotation,
             right_rotation,
-            (int)(left_rotation/s),
-            (int)right_rotation/s, s);
+            left_rotation/s,
+            right_rotation/s, s);
 }
 
-void motors_test(float speed) {
+void motorsTest(float speed) {
+    printf("motors test %f\n", speed);
     testTimer.start();
-    printf("motors test\r\n");
     motorsTestStep(0.0, 0.0); //stop
     motorsTestStep(speed, speed); // forward
     motorsTestStep(-speed, -speed); // backward
@@ -46,10 +45,22 @@ void motors_test(float speed) {
 }
 
 
-int main() {
+
+void motor_test_speeds() {
     while(true) {
         for(int i = 1; i <= 4; ++i) {
-            motors_test(i*0.25);
+            motorsTest(i*0.25);
         }
+    }
+}
+
+DigitalOut led1(LED1);
+
+int main() {
+    printf("roundbot\n");
+    led1 = true;
+
+    while (true) {
+        motor_test_speeds();
     }
 }

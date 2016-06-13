@@ -5,9 +5,9 @@ typedef enum { FREE, BRAKE, DEFAULT } MotorMode;
 
 class MotorOut {
 private:
-    DigitalOut _en;
-    PwmOut _in1;
-    PwmOut _in2;
+    DigitalOut en;
+    PwmOut in1;
+    PwmOut in2;
     MotorMode _mode;
 
     void write(float in1, float in2);
@@ -22,14 +22,20 @@ public:
 
 class MotorEncoder {
 private:
-    InterruptIn _in1;
-    DigitalIn _in2;
-    long _delta_r;
+    float zero;
+    AnalogIn in1;
+    AnalogIn in2;
+    Ticker ticker;
+    float in1_prev_value = 0.0;
+    long delta_r;
 
-    void trigger();
+    static constexpr unsigned long period = 50;
 
 public:
     MotorEncoder(PinName in1, PinName in2);
+    void start();
+    void stop();
     long read();
     long peek();
+    void sample();
 };

@@ -2,12 +2,12 @@
 #include "motor.h"
 #include <math.h>
 
-MotorOut::MotorOut(PinName en, PinName in1, PinName in2, MotorMode initial_mode)
-: _en(DigitalOut(en)), _in1(PwmOut(in1)), _in2(PwmOut(in2)) {
-    _in1.period_us(2500);
-    _in2.period_us(2500);
+MotorOut::MotorOut(PinName enpin, PinName in1pin, PinName in2pin, MotorMode initial_mode)
+: en(DigitalOut(enpin)), in1(PwmOut(in1pin)), in2(PwmOut(in2)) {
+    in1.period_us(2500);
+    in2.period_us(2500);
     mode(initial_mode);
-    _en.write(1);
+    en.write(1);
     switch(_mode) {
     case BRAKE:
         brake();
@@ -50,31 +50,37 @@ void MotorOut::drive(float percent, MotorMode drive_mode) {
     }
 }
 
-void MotorOut::write(float in1, float in2) {
-    _in1.write(in1);
-    _in2.write(in2);
+void MotorOut::write(float in1v, float in2v) {
+    in1.write(in1v);
+    in2.write(in2v);
 }
 
-void MotorEncoder::trigger() {
-    if(_in2.read()) {
-        _delta_r++;
-    } else {
-        _delta_r--;
+void MotorEncoder::sample() {
+    /*
+    float in1_next_value = in1.read();
+    if(in1_prev_value < zero && in1_next_value > zero) {
+        float in2_value = in2.read();
+        delta_r += (in2_value > zero) ? 1 : -1;
     }
+
+    in1_prev_value = in1_next_value;
+    */
 }
 
-MotorEncoder::MotorEncoder(PinName in1, PinName in2)
-: _in1(InterruptIn(in2)), _in2(DigitalIn(in1)) {
-    _in1.rise(this, &MotorEncoder::trigger);
-    _delta_r = 0;
+MotorEncoder::MotorEncoder(PinName in1pin, PinName in2pin)
+: zero(0.5),
+  in1(AnalogIn(in1pin)),
+  in2(AnalogIn(in2pin)),
+  delta_r(0) {
+    ticker.attach_us(this, &MotorEncoder::sample, period);
 }
 
 long MotorEncoder::read() {
-    long delta = _delta_r;
-    _delta_r = 0;
+    long delta = delta_r;
+    delta_r = 0;
     return delta;
 }
 
 long MotorEncoder::peek() {
-    return _delta_r;
+    return delta_r;
 }
