@@ -27,11 +27,15 @@ private:
     AnalogIn in2;
     Ticker ticker;
     float in1_prev_value = 0.0;
-    long delta_r;
+    volatile long delta_r;
 
-    static constexpr unsigned long period = 50;
+    static constexpr timestamp_t period_us = 50;
 
 public:
+    volatile long count_s;
+    volatile float min_v;
+    volatile float max_v;
+
     MotorEncoder(PinName in1, PinName in2);
     void start();
     void stop();

@@ -19,20 +19,26 @@ void motorsTestStep(float left, float right) {
     leftEncoder.read();
     rightEncoder.read();
     drive(left, right);
-    wait(1.0);
+    wait_ms(1000);
     long left_rotation = leftEncoder.read();
     long right_rotation = rightEncoder.read();
     long s = testTimer.read_ms();
-    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld\n",
+    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld min: %02d max: %02d %09ld %09ld\n",
             left_rotation,
             right_rotation,
             left_rotation/s,
-            right_rotation/s, s);
+            right_rotation/s, s,
+            (int)(rightEncoder.min_v*100.0f),
+            (int)(rightEncoder.max_v*100.0f),
+            leftEncoder.count_s,
+            rightEncoder.count_s);
 }
 
 void motorsTest(float speed) {
     printf("motors test %f\n", speed);
     testTimer.start();
+    leftEncoder.start();
+    rightEncoder.start();
     motorsTestStep(0.0, 0.0); //stop
     motorsTestStep(speed, speed); // forward
     motorsTestStep(-speed, -speed); // backward
@@ -42,6 +48,8 @@ void motorsTest(float speed) {
     motorsTestStep(-speed, speed); // spin left
     motorsTestStep(0.0, 0.0); //stop
     testTimer.stop();
+    leftEncoder.stop();
+    rightEncoder.stop();
 }
 
 
