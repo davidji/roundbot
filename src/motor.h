@@ -22,7 +22,8 @@ public:
 
 class MotorEncoder {
 private:
-    float zero;
+    float in1_zero;
+    float in2_zero;
     AnalogIn in1;
     AnalogIn in2;
     Ticker ticker;
@@ -33,8 +34,10 @@ private:
 
 public:
     volatile long count_s;
-    volatile float min_v;
-    volatile float max_v;
+    volatile float in1_min;
+    volatile float in1_max;
+    volatile float in2_min;
+    volatile float in2_max;
 
     MotorEncoder(PinName in1, PinName in2);
     void start();

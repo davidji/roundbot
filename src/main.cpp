@@ -23,13 +23,15 @@ void motorsTestStep(float left, float right) {
     long left_rotation = leftEncoder.read();
     long right_rotation = rightEncoder.read();
     long s = testTimer.read_ms();
-    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld min: %02d max: %02d %09ld %09ld\n",
+    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld min: %02d max: %02d min: %02d max: %02d %09ld %09ld\n",
             left_rotation,
             right_rotation,
             left_rotation/s,
             right_rotation/s, s,
-            (int)(rightEncoder.min_v*100.0f),
-            (int)(rightEncoder.max_v*100.0f),
+            (int)(rightEncoder.in1_min*100.0f),
+            (int)(rightEncoder.in1_max*100.0f),
+            (int)(rightEncoder.in2_min*100.0f),
+            (int)(rightEncoder.in2_max*100.0f),
             leftEncoder.count_s,
             rightEncoder.count_s);
 }

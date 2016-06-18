@@ -58,24 +58,30 @@ void MotorOut::write(float in1v, float in2v) {
 
 
 MotorEncoder::MotorEncoder(PinName in1pin, PinName in2pin)
-: zero(0.25),
+: in1_zero(0.25),
+  in2_zero(0.14),
   in1(AnalogIn(in1pin)),
   in2(AnalogIn(in2pin)),
   ticker(),
   delta_r(0),
   count_s(0),
-  min_v(1.0),
-  max_v(0.0) {
+  in1_min(1.0),
+  in1_max(0.0),
+  in2_min(1.0),
+  in2_max(0.0) {
+
 }
 
 void MotorEncoder::sample() {
     count_s++;
     float in1_next_value = in1.read();
-    min_v = fmin(in1_next_value, min_v);
-    max_v = fmax(in1_next_value, max_v);
-    if(in1_prev_value < zero && in1_next_value > zero) {
+    in1_min = fmin(in1_next_value, in1_min);
+    in1_max = fmax(in1_next_value, in1_max);
+    if(in1_prev_value < in1_zero && in1_next_value > in1_zero) {
         float in2_value = in2.read();
-        delta_r += (in2_value > zero) ? 1 : -1;
+        in2_min = fmin(in2_value, in2_min);
+        in2_max = fmax(in2_value, in2_max);
+        delta_r += (in2_value > in2_zero) ? 1 : -1;
     }
 
     in1_prev_value = in1_next_value;
