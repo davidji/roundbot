@@ -50,11 +50,11 @@ PA9  | D1  | USART1_TX | Serial TX
 PA10 | D0  | USART1_RX | Serial RX
 PA12 | D2  |           | Unused
 PB0  | D3  | TIM1_CH2N | Motor L IN1
-PB7  | D4  |           | Unused
-PB6  | D5  |           | Unused
+PB7  | D4  | I2C1_SDA  | Unused
+PB6  | D5  | I2C1_SCL  | Unused
 PB1  | D6  | TIM1_CH3N | Motor L IN2
-PF0  | D7  | GPIO      | Motor L EN
-PF1  | D8  | GPIO      | Motor R EN
+PF0  | D7  |           | Unused
+PF1  | D8  |           | Unused
 PA8  | D9  | TIM1_CH1  | Motor R IN1
 PA11 | D10 | TIM1_CH4  | Motor R IN2
 PB5  | D11 | SPI_MOSI  | RF24 MOSI

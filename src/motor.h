@@ -5,7 +5,6 @@ typedef enum { FREE, BRAKE, DEFAULT } MotorMode;
 
 class MotorOut {
 private:
-    DigitalOut en;
     PwmOut in1;
     PwmOut in2;
     MotorMode _mode;
@@ -13,7 +12,7 @@ private:
     void write(float in1, float in2);
 
 public:
-    MotorOut(PinName en, PinName in1, PinName in2, MotorMode mode = BRAKE);
+    MotorOut(PinName in1, PinName in2, MotorMode mode = BRAKE);
     void mode(MotorMode mode);
     void free();
     void brake();

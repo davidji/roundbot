@@ -2,8 +2,8 @@
 #include "motor.h"
 #include "wiring.h"
 
-MotorOut leftMotor(motor_left_en_pin, motor_left_in1_pin, motor_left_in2_pin);
-MotorOut rightMotor(motor_right_en_pin, motor_right_in1_pin, motor_right_in2_pin);
+MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin);
+MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin);
 MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
 MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
 
@@ -12,6 +12,10 @@ Timer testTimer;
 void drive(float left, float right) {
     leftMotor.drive(left);
     rightMotor.drive(right);
+}
+
+int percent(float f) {
+    return f * 100.0f;
 }
 
 void motorsTestStep(float left, float right) {
@@ -23,17 +27,17 @@ void motorsTestStep(float left, float right) {
     long left_rotation = leftEncoder.read();
     long right_rotation = rightEncoder.read();
     long s = testTimer.read_ms();
-    printf("rotation: %06ld, %06ld rate: %06ld, %06ld time: %09ld min: %02d max: %02d min: %02d max: %02d %09ld %09ld\n",
+    printf("speed: % 02d, % 02d rotation: % 06ld, % 06ld rate: % 06ld, % 06ld min: %02d max: %02d min: %02d max: %02d\n",
+            percent(left),
+            percent(right),
             left_rotation,
             right_rotation,
-            left_rotation/s,
-            right_rotation/s, s,
-            (int)(rightEncoder.in1_min*100.0f),
-            (int)(rightEncoder.in1_max*100.0f),
-            (int)(rightEncoder.in2_min*100.0f),
-            (int)(rightEncoder.in2_max*100.0f),
-            leftEncoder.count_s,
-            rightEncoder.count_s);
+            (1000*left_rotation)/s,
+            (1000*right_rotation)/s,
+            percent(rightEncoder.in1_min),
+            percent(rightEncoder.in1_max),
+            percent(rightEncoder.in2_min),
+            percent(rightEncoder.in2_max));
 }
 
 void motorsTest(float speed) {

@@ -2,9 +2,9 @@
 A rotary encoder generates two signals. Going forward, one signal will
 be 90 degrees forward of the other, and going in reverse, the opposite.
 
-If the signal was digital, I could be interrupted on the rising edge
-of one signal, capture the value of the other signal and use that as
-the direction.
+If the signal was digital, the rising edge of one signal could trigger 
+an interrupt which captures the value of the other signal which can be
+used to determine the direction.
 
 The capture needs to happen within 1/8th of the period of the encoder
 signal to be reliable.

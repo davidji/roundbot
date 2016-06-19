@@ -2,12 +2,11 @@
 #include "motor.h"
 #include <math.h>
 
-MotorOut::MotorOut(PinName enpin, PinName in1pin, PinName in2pin, MotorMode initial_mode)
-: en(DigitalOut(enpin)), in1(PwmOut(in1pin)), in2(PwmOut(in2pin)) {
+MotorOut::MotorOut(PinName in1pin, PinName in2pin, MotorMode initial_mode)
+: in1(PwmOut(in1pin)), in2(PwmOut(in2pin)) {
     in1.period_us(2500);
     in2.period_us(2500);
     mode(initial_mode);
-    en.write(1);
     switch(_mode) {
     case BRAKE:
         brake();
@@ -42,9 +41,9 @@ void MotorOut::drive(float percent, MotorMode drive_mode) {
         break;
     case BRAKE:
         if(percent < 0) {
-            write(fabs(percent), 1.0);
+            write(1.0 - fabs(percent), 1.0);
         } else {
-            write(1.0, fabs(percent));
+            write(1.0, 1.0 - fabs(percent));
         }
         break;
     }
