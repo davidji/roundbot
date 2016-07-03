@@ -3,6 +3,8 @@ syntax: glob
 *.pyc
 hardware/chassis.scad
 hardware/chassis.dxf
+*.b\#[0-9]
+*.s\#[0-9]
 
 syntax: regexp
 ^hardware/chassis\.scad$
