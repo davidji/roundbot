@@ -14,7 +14,7 @@ from util import *
 from raspberrypi import aplus
 
 
-ABIT=0.1
+
 FA=0.1
 FS=0.5
 

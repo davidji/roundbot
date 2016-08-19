@@ -2,7 +2,7 @@ from __future__ import division
 from solid import *
 from solid.utils import *
 
-ABIT=0.001
+ABIT=0.1
 
 def inch_to_mm(in_inches):
     try:
