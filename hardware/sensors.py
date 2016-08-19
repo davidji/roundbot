@@ -8,7 +8,7 @@ class hc_sr04:
     """Ultrasonic rangefinder module
     The transmitter and receiver are two cylinders d=16 protruding from the front"""
     d = [45,20,16]
-    
+
     @staticmethod
     def tranceiver_cut():
         return radial(18, [0,180], circle(r=8))

@@ -52,8 +52,8 @@ PA12 | D2  |           | Unused
 PB0  | D3  | TIM1_CH2N | Motor L IN1
 PB7  | D4  | I2C1_SDA  | I2C Raspberry Pi/other
 PB6  | D5  | I2C1_SCL  | I2C Raspberry Pi/other
-PB1  | D6  | TIM1_CH3N | Motor L IN2
-PF0  | D7  |           | Unused
+PB1  | D6  |           | Unused
+PF0  | D7  | TIM1_CH3N | Motor L IN2
 PF1  | D8  |           | Unused
 PA8  | D9  | TIM1_CH1  | Motor R IN1
 PA11 | D10 | TIM1_CH4  | Motor R IN2

@@ -1,4 +1,4 @@
-
+from __future__ import division
 from solid import *
 from solid.utils import *
 

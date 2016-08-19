@@ -1,7 +1,11 @@
 
 #include "mbed.h"
 
+#ifndef _MOTOR_H_
+#define _MOTOR_H_
+
 typedef enum { FREE, BRAKE, DEFAULT } MotorMode;
+
 
 class MotorOut {
 private:
@@ -19,24 +23,30 @@ public:
     void drive(float percent, MotorMode mode = DEFAULT);
 };
 
+class MinMax {
+private:
+    AnalogIn in;
+    float zero;
+public:
+    volatile float min;
+    volatile float max;
+
+    MinMax(PinName in);
+    bool read();
+};
+
 class MotorEncoder {
 private:
-    float in1_zero;
-    float in2_zero;
-    AnalogIn in1;
-    AnalogIn in2;
     Ticker ticker;
-    float in1_prev_value = 0.0;
+    bool in1_prev_value = false;
     volatile long delta_r;
 
     static constexpr timestamp_t period_us = 50;
 
 public:
+    MinMax in1;
+    MinMax in2;
     volatile long count_s;
-    volatile float in1_min;
-    volatile float in1_max;
-    volatile float in2_min;
-    volatile float in2_max;
 
     MotorEncoder(PinName in1, PinName in2);
     void start();
@@ -45,3 +55,5 @@ public:
     long peek();
     void sample();
 };
+
+#endif

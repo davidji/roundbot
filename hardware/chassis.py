@@ -9,7 +9,7 @@ from solid import screw_thread
 
 from pololu.caster import *
 from batteries import cr123a
-from fixings import M3, NO2
+from fixings import M2, M3, NO2
 from util import *
 from raspberrypi import aplus
 
@@ -24,10 +24,6 @@ CR123A_FORWARD=MOTOR_WIDTH/2+1+cr123a.d[1]/2
 STANDOFF_HEIGHT=25
 BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+cr123a.d[1]
 CASTER_FORWARD=BATTERY_OUTSIDE_EDGE+2
-
-
-def corners(d, o=None):
-    return ([p*d for p in v]  for v in CORNERS)
 
 
 # Height of platform: the wheels are 16mm, less 3mm for the chassis
@@ -136,6 +132,10 @@ def chassis(radius=50.0,
         # The nucleo board is ~82.5mm accross
         return back(inch_to_mm(2.05)-12)(left(inch_to_mm(1.9/2))(holes))
 
+    def pcb_70x50_mount():
+        """This is a generic pcb with M2 corner holes that I have a few of"""
+        return corners([46,66], M2.cut())
+
     def wheels():
         rwheel = up(5)(right(radius-arch_width+5)(rotate([0,90,0])(cylinder(r=16,h=7,center=True))))
         lwheel = mirror([1,0,0])(rwheel)
@@ -162,10 +162,12 @@ def chassis(radius=50.0,
     def lid_cut():
         return (circle(radius) -
                 aplus.cut_holes() -
+                pcb_70x50_mount() -
                 radial(0, [0,180], wheel_arch()) -
                 connecting_screw_holes() -
                 radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -
-                radial(35, [0,90,180,270], square([16,3], True)))
+                radial(35, [90,270], square([16,3], True)) -
+                radial(35, [0, 180], circle(d=15)))
 
     def lid():
         return (linear_extrude(height=3)(lid_cut()) -

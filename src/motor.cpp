@@ -2,6 +2,7 @@
 #include "motor.h"
 #include <math.h>
 
+
 MotorOut::MotorOut(PinName in1pin, PinName in2pin, MotorMode initial_mode)
 : in1(PwmOut(in1pin)), in2(PwmOut(in2pin)) {
     in1.period_us(2500);
@@ -57,30 +58,37 @@ void MotorOut::write(float in1v, float in2v) {
 
 
 MotorEncoder::MotorEncoder(PinName in1pin, PinName in2pin)
-: in1_zero(0.25),
-  in2_zero(0.14),
-  in1(AnalogIn(in1pin)),
-  in2(AnalogIn(in2pin)),
-  ticker(),
+: ticker(),
   delta_r(0),
-  count_s(0),
-  in1_min(1.0),
-  in1_max(0.0),
-  in2_min(1.0),
-  in2_max(0.0) {
+  in1(in1pin),
+  in2(in2pin),
+  count_s(0) {
 
+}
+
+MinMax::MinMax(PinName inpin)
+: in(AnalogIn(inpin)),
+  zero(0.5),
+  min(1.0),
+  max(0.0)
+  { }
+
+inline bool MinMax::read() {
+    float value = in.read();
+    if(max < value || min > value) {
+        min = fmin(value, min);
+        max = fmax(value, max);
+        zero = (min + max)/2;
+    }
+    return value > zero;
 }
 
 void MotorEncoder::sample() {
     count_s++;
-    float in1_next_value = in1.read();
-    in1_min = fmin(in1_next_value, in1_min);
-    in1_max = fmax(in1_next_value, in1_max);
-    if(in1_prev_value < in1_zero && in1_next_value > in1_zero) {
-        float in2_value = in2.read();
-        in2_min = fmin(in2_value, in2_min);
-        in2_max = fmax(in2_value, in2_max);
-        delta_r += (in2_value > in2_zero) ? 1 : -1;
+    bool in1_next_value = in1.read();
+    if(!in1_prev_value && in1_next_value) {
+        bool in2_value = in2.read();
+        delta_r += in2_value ? 1 : -1;
     }
 
     in1_prev_value = in1_next_value;

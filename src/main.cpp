@@ -1,5 +1,6 @@
 #include "mbed.h"
 #include "motor.h"
+#include "hcsr04.h"
 #include "wiring.h"
 
 MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin);
@@ -8,6 +9,8 @@ MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
 MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
 
 Timer testTimer;
+DigitalOut led1(LED1);
+HC_SR04 distance(distance_trig, distance_echo);
 
 void drive(float left, float right) {
     leftMotor.drive(left);
@@ -19,25 +22,36 @@ int percent(float f) {
 }
 
 void motorsTestStep(float left, float right) {
+
     testTimer.reset();
     leftEncoder.read();
     rightEncoder.read();
     drive(left, right);
     wait_ms(1000);
+    led1 = ~led1;
     long left_rotation = leftEncoder.read();
     long right_rotation = rightEncoder.read();
     long s = testTimer.read_ms();
-    printf("speed: % 02d, % 02d rotation: % 06ld, % 06ld rate: % 06ld, % 06ld min: %02d max: %02d min: %02d max: %02d\n",
+    printf("speed: %+04d, %+04d rotation: %+06ld, %+06ld rate: %+06ld, %+06ld "
+            "min(l1): %02d max(l1): %02d min(l2): %02d max(l2): %02d "
+            "min(r1): %02d max(r1): %02d min(r2): %02d max(r2): %02d "
+            "distance: %03d\n",
             percent(left),
             percent(right),
             left_rotation,
             right_rotation,
             (1000*left_rotation)/s,
             (1000*right_rotation)/s,
-            percent(rightEncoder.in1_min),
-            percent(rightEncoder.in1_max),
-            percent(rightEncoder.in2_min),
-            percent(rightEncoder.in2_max));
+            percent(leftEncoder.in1.min),
+            percent(leftEncoder.in1.max),
+            percent(leftEncoder.in2.min),
+            percent(leftEncoder.in2.max),
+            percent(rightEncoder.in1.min),
+            percent(rightEncoder.in1.max),
+            percent(rightEncoder.in2.min),
+            percent(rightEncoder.in2.max),
+            percent(distance.read()));
+
 }
 
 void motorsTest(float speed) {
@@ -68,13 +82,14 @@ void motor_test_speeds() {
     }
 }
 
-DigitalOut led1(LED1);
+
 
 int main() {
     printf("roundbot\n");
+    distance.start();
     led1 = true;
 
     while (true) {
-        motor_test_speeds();
+       motor_test_speeds();
     }
 }
