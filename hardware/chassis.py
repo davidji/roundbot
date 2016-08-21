@@ -166,13 +166,13 @@ def chassis(radius=50.0,
                 radial(0, [0,180], wheel_arch()) -
                 connecting_screw_holes() -
                 radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -
-                radial(35, [90,270], square([16,3], True)) -
+                radial(35, [90,270], arc(7.5, 180, 0)) -
                 radial(35, [0, 180], circle(d=15)))
 
     def lid():
         return (linear_extrude(height=3)(lid_cut()) -
                 rotate_extrude()(translate([-radius, 0])(polygon(([-ABIT,-ABIT],[3,-ABIT],[-ABIT,3])))) +
-                radial(radius - 3, [+45, -45, +135, -135], (cylinder(r=3,h=3))))
+                radial(radius - 3, [+45, -45, +135, -135], (tube(r=3,ir=1.5,h=3))))
 
     def body_cross_section(height):
        return translate([radius-1,0])(
