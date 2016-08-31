@@ -1,4 +1,5 @@
 
+#include <functional>
 #include "mbed.h"
 
 #ifndef _MOTOR_H_
@@ -6,6 +7,7 @@
 
 typedef enum { FREE, BRAKE, DEFAULT } MotorMode;
 
+namespace motor {
 
 class MotorOut {
 private:
@@ -24,6 +26,7 @@ public:
 };
 
 class MinMax {
+
 private:
     AnalogIn in;
     float zero;
@@ -35,11 +38,16 @@ public:
     bool read();
 };
 
+typedef enum direction: int { FORWARD = 1, BACKWARD = -1 } Direction;
+typedef FunctionPointerArg1<void, Direction> StepFunctionPointer;
+
 class MotorEncoder {
+
 private:
     Ticker ticker;
     bool in1_prev_value = false;
     volatile long delta_r;
+    StepFunctionPointer stepFn;
 
     static constexpr timestamp_t period_us = 50;
 
@@ -54,6 +62,20 @@ public:
     long read();
     long peek();
     void sample();
+
+    /**
+     * Attach a member function to be called by the encoder for each step
+     * forward.
+     *  @param tptr pointer to the object to call the member function on
+     *  @param mptr pointer to the member function to be called
+     */
+    template<typename T>
+    void step(T* tptr, void (T::*mptr)(Direction)) {
+        stepFn.attach(tptr, mptr);
+    }
 };
+
+}; /* namespace motor */
+
 
 #endif

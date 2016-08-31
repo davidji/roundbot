@@ -1,16 +1,31 @@
+
+#define _USE_MATH_DEFINES
+
+#include <functional>
+#include <math.h>
 #include "mbed.h"
 #include "motor.h"
-#include "hcsr04.h"
+#include "differential.h"
+#include "hc-sr04.h"
 #include "wiring.h"
 
-MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin);
-MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin);
-MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
-MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
+const float pi = 3.1415927;
+const float gearMotorRatio = 50.0;
+const int encoderArms = 3;
+const float wheelDiameter = 0.032;
+const float wheelBase = 0.084;
+const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
+
+motor::MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin);
+motor::MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin);
+motor::MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
+motor::MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
+
+DifferentialDrive differential(Wheel(leftMotor, leftEncoder, stepLength), Wheel(rightMotor, rightEncoder, stepLength), wheelBase);
 
 Timer testTimer;
 DigitalOut led1(LED1);
-HC_SR04 distance(distance_trig, distance_echo);
+HC_SR04 range(distance_trig, distance_echo);
 
 void drive(float left, float right) {
     leftMotor.drive(left);
@@ -50,7 +65,7 @@ void motorsTestStep(float left, float right) {
             percent(rightEncoder.in1.max),
             percent(rightEncoder.in2.min),
             percent(rightEncoder.in2.max),
-            percent(distance.read()));
+            percent(range.read()));
 
 }
 
@@ -82,14 +97,32 @@ void motor_test_speeds() {
     }
 }
 
+void differential_test() {
+    differential.start();
 
+    // this little hack calibrates the encoders before we start the turns
+    testTimer.start();
+    motorsTestStep(+0.25, -0.25);
+
+    while (true) {
+        differential.turn(pi/2.0);
+        printf("waiting...\n");
+        wait(10.0);
+        led1.write(!led1.read());
+    }
+}
+
+void encoder_test() {
+    while (true) {
+        motor_test_speeds();
+    }
+}
 
 int main() {
     printf("roundbot\n");
-    distance.start();
+    // range.start();
     led1 = true;
 
-    while (true) {
-       motor_test_speeds();
-    }
+    // encoder_test();
+    differential_test();
 }

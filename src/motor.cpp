@@ -2,6 +2,7 @@
 #include "motor.h"
 #include <math.h>
 
+namespace motor {
 
 MotorOut::MotorOut(PinName in1pin, PinName in2pin, MotorMode initial_mode)
 : in1(PwmOut(in1pin)), in2(PwmOut(in2pin)) {
@@ -111,3 +112,5 @@ void MotorEncoder::start() {
 void MotorEncoder::stop() {
     ticker.detach();
 }
+
+}; /* namespace motor */

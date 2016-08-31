@@ -1,7 +1,8 @@
 
 #include <mbed.h>
 
-
+#ifndef _HC_SR04_H_
+#define _HC_SR04_H_
 
 class HC_SR04 {
 private:
@@ -29,3 +30,6 @@ public:
      */
     float read();
 };
+
+
+#endif /* _HC_SR04_H_ */

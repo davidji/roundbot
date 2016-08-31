@@ -4,13 +4,15 @@ from solid.utils import *
 
 from util import inch_to_mm
 
+tolerance = 1.05
+
 class MetricScrew:
     def __init__(self, thread, tap):
         self.thread = thread
         self.tap = tap
 
     def cut(self, tapped=False):
-        return circle(r=(tapped and self.tap or self.thread)/2)
+        return circle(r=(tapped and self.tap or self.thread*tolerance)/2)
 
 M1_6 = MetricScrew(1.6, 1.25)
 M2 = MetricScrew(2.0, 1.6)

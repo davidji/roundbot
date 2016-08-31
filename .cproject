@@ -31,10 +31,13 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_ARM7"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_A"/>
+									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Adafruit_MQTT_Library_ID1092"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/ArduinoJson_ID64"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/DHT_sensor_library_ID19"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Time_ID44"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.922107295" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
@@ -42,7 +45,8 @@
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1459420947.59"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1464367002.41"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
 									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
@@ -53,8 +57,7 @@
 									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=020901"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=021101"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.149990277" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -68,10 +71,13 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_ARM7"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_A"/>
+									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Adafruit_MQTT_Library_ID1092"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/ArduinoJson_ID64"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/DHT_sensor_library_ID19"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Time_ID44"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1198905600" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
@@ -79,7 +85,8 @@
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1459420947.59"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1464367002.41"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
 									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
@@ -90,8 +97,7 @@
 									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=020901"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=021101"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.762536863" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -105,10 +111,13 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/variant/NUCLEO_F303K8/mbed/TARGET_NUCLEO_F303K8/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_ARM7"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libs/rtos/TARGET_CORTEX_A"/>
+									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Adafruit_MQTT_Library_ID1092"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/ArduinoJson_ID64"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/DHT_sensor_library_ID19"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Time_ID44"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.884639970" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
@@ -116,7 +125,8 @@
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1459420947.59"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1464367002.41"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
 									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
@@ -127,8 +137,7 @@
 									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
 									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=020901"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=021101"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.549319812" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -201,6 +210,14 @@
 				<buildCommand>platformio</buildCommand>
 				<buildArguments>-f -c eclipse</buildArguments>
 				<buildTarget>update</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="PlatformIO: Rebuild C/C++ Project Index" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>platformio</buildCommand>
+				<buildArguments>-f -c eclipse</buildArguments>
+				<buildTarget>init --ide eclipse</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>

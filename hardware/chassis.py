@@ -112,13 +112,13 @@ def chassis(radius=50.0,
         return circle(5, True)
 
     def pololu_qtr_3a_holes():
-        hole = m3()
+        screw_hole = hole()(m3())
         spacing=inch_to_mm(1.05)
         QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + 2 + inch_to_mm(0.3)/2
         return forward(QTR_3A_FORWARD)(
             back(inch_to_mm(0.10))(square([1.1*inch_to_mm(0.4), 1.1*inch_to_mm(0.1)], True)) +
-            left(spacing/2)(hole) +
-            right(spacing/2)(hole))
+            left(spacing/2)(screw_hole) +
+            right(spacing/2)(screw_hole))
 
     def arduino_mount():
         """The plan is to use a nucleo board, which has arduino mounting screw points"""
@@ -142,7 +142,7 @@ def chassis(radius=50.0,
         return rwheel + lwheel
 
     def connecting_screw_holes():
-        return radial(radius - 3, [+45, -45, +135, -135], M3.cut())
+        return hole()(radial(radius - 3, [+45, -45, +135, -135], M3.cut()))
 
     def base():
         return (
@@ -183,9 +183,9 @@ def chassis(radius=50.0,
             translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
 
     def body(height=21):
-        vstrut = (translate([radius-3,-1])(cube([2.5,2,height])))
+        vstrut = left(1.25)(cube([2.5,2,height]))
         return (rotate_extrude()(body_cross_section(height)) +
-                union()(*(rotate(a)(vstrut) for a in range(0,360,15) if (a - 45) % 90)) -
+                radial(radius - 3, [a + 7.5 for a in range(0,360,15)], vstrut) -
                 radial(radius - 3, [+45, -45, +135, -135], up(height)(cylinder(r=3,h=3))))
 
     def caster_plinth_cut():

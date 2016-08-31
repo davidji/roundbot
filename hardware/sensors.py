@@ -11,7 +11,7 @@ class hc_sr04:
 
     @staticmethod
     def tranceiver_cut():
-        return radial(27.0/2, [0,180], circle(r=8))
+        return radial(26.0/2, [0,180], circle(r=8.1))
 
     @staticmethod
     def screw_cut(tapped=False):

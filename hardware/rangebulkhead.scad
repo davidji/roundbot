@@ -1,23 +1,47 @@
 $fa = 0.1; $fs = 0.5;
 
-union() {
-	union() {
-		difference() {
+difference(){
+	intersection() {
+		linear_extrude(height = 25.0000000000) {
 			difference() {
-				linear_extrude(height = 50.0000000000) {
+				difference() {
+					difference() {
+						circle(r = 50.0000000000);
+						rotate(a = -90) {
+							translate(v = [0, -50.0000000000, 0]) {
+								square(center = true, size = [150.0000000000, 100.0000000000]);
+							}
+						}
+						rotate(a = -90) {
+							translate(v = [0, -50.0000000000, 0]) {
+								square(center = true, size = [150.0000000000, 100.0000000000]);
+							}
+						}
+					}
 					union() {
+						square(center = true, size = [65, 56, 10]);
+						square(center = true, size = [70.0000000000, 50.0000000000]);
+					}
+				}
+				square(center = true, size = [35.0000000000, 100.0000000000]);
+			}
+		}
+		union() {
+			union() {
+				union() {
+					linear_extrude(height = 25.0000000000) {
 						difference() {
-							difference() {
-								difference() {
+							union() {
+								union() {
 									difference() {
 										difference() {
 											circle(r = 50.0000000000);
-											rotate(a = -60) {
+											rotate(a = -90) {
 												translate(v = [0, -50.0000000000, 0]) {
 													square(center = true, size = [150.0000000000, 100.0000000000]);
 												}
 											}
-											rotate(a = -120) {
+											rotate(a = -90) {
 												translate(v = [0, -50.0000000000, 0]) {
 													square(center = true, size = [150.0000000000, 100.0000000000]);
 												}
@@ -25,116 +49,62 @@ union() {
 										}
 										difference() {
 											circle(r = 47.0000000000);
-											rotate(a = -60) {
+											rotate(a = -90) {
 												translate(v = [0, -47.0000000000, 0]) {
 													square(center = true, size = [141.0000000000, 94.0000000000]);
 												}
 											}
-											rotate(a = -220) {
+											rotate(a = -90) {
 												translate(v = [0, -47.0000000000, 0]) {
 													square(center = true, size = [141.0000000000, 94.0000000000]);
 												}
 											}
 										}
 									}
-									difference() {
-										circle(r = 47.0000000000);
-										rotate(a = 40) {
-											translate(v = [0, -47.0000000000, 0]) {
-												square(center = true, size = [141.0000000000, 94.0000000000]);
-											}
-										}
-										rotate(a = -120) {
-											translate(v = [0, -47.0000000000, 0]) {
-												square(center = true, size = [141.0000000000, 94.0000000000]);
-											}
-										}
+									translate(v = [42.5000000000, 0, 0]) {
+										square(center = true, size = [3, 100.0000000000]);
 									}
 								}
 								union() {
 									rotate(a = -45) {
 										translate(v = [0, 47.0000000000, 0]) {
-											union() {
+											difference() {
 												circle(r = 3);
-												translate(v = [0, 1.5000000000, 0]) {
-													square(center = true, size = [6, 3]);
-												}
 											}
 										}
 									}
 									rotate(a = -135) {
 										translate(v = [0, 47.0000000000, 0]) {
-											union() {
+											difference() {
 												circle(r = 3);
-												translate(v = [0, 1.5000000000, 0]) {
-													square(center = true, size = [6, 3]);
-												}
 											}
 										}
 									}
 								}
 							}
-							square(center = true, size = [70, 56]);
+							union() {
+								rotate(a = -90) {
+									translate(v = [0, 35.0000000000, 0]) {
+										circle(d = 15);
+									}
+								}
+							}
 						}
-						union() {
-							rotate(a = -45) {
-								translate(v = [0, 47.0000000000, 0]) {
-									difference() {
-										difference() {
-											circle(r = 6);
+					}
+					translate(v = [41.0000000000, 0, 12.5000000000]) {
+						rotate(a = [0, 90, 0]) {
+							linear_extrude(height = 10) {
+								difference() {
+									offset(chamfer = false, r = 1.8000000000) {
+										union() {
+											rotate(a = 0) {
+												translate(v = [0, 13.0000000000, 0]) {
+													circle(r = 8.1000000000);
+												}
+											}
 											rotate(a = 180) {
-												translate(v = [0, -6, 0]) {
-													square(center = true, size = [18, 12]);
-												}
-											}
-											rotate(a = -180) {
-												translate(v = [0, -6, 0]) {
-													square(center = true, size = [18, 12]);
-												}
-											}
-										}
-										difference() {
-											circle(r = 3);
-											rotate(a = 180) {
-												translate(v = [0, -3, 0]) {
-													square(center = true, size = [9, 6]);
-												}
-											}
-											rotate(a = -180) {
-												translate(v = [0, -3, 0]) {
-													square(center = true, size = [9, 6]);
-												}
-											}
-										}
-									}
-								}
-							}
-							rotate(a = -135) {
-								translate(v = [0, 47.0000000000, 0]) {
-									difference() {
-										difference() {
-											circle(r = 6);
-											rotate(a = 180) {
-												translate(v = [0, -6, 0]) {
-													square(center = true, size = [18, 12]);
-												}
-											}
-											rotate(a = -180) {
-												translate(v = [0, -6, 0]) {
-													square(center = true, size = [18, 12]);
-												}
-											}
-										}
-										difference() {
-											circle(r = 3);
-											rotate(a = 180) {
-												translate(v = [0, -3, 0]) {
-													square(center = true, size = [9, 6]);
-												}
-											}
-											rotate(a = -180) {
-												translate(v = [0, -3, 0]) {
-													square(center = true, size = [9, 6]);
+												translate(v = [0, 13.0000000000, 0]) {
+													circle(r = 8.1000000000);
 												}
 											}
 										}
@@ -144,117 +114,41 @@ union() {
 						}
 					}
 				}
-				translate(v = [44.0000000000, 0, 11.0000000000]) {
+				translate(v = [17.5000000000, 0, 12.5000000000]) {
 					rotate(a = [0, 90, 0]) {
-						linear_extrude(height = 10) {
-							square(center = true, size = [16.1000000000, 48.1000000000]);
-						}
-					}
-				}
-			}
-			translate(v = [34.9000000000, 0, 35]) {
-				rotate(a = [0, 90, 0]) {
-					linear_extrude(height = 16) {
-						union() {
-							rotate(a = 0) {
-								translate(v = [0, 13.5000000000, 0]) {
-									circle(r = 8);
-								}
-							}
-							rotate(a = 180) {
-								translate(v = [0, 13.5000000000, 0]) {
-									circle(r = 8);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		translate(v = [44.0000000000, 0, 11.0000000000]) {
-			rotate(a = [0, 90, 0]) {
-				translate(v = [-4.0000000000, -20.0000000000]) {
-					union() {
-						translate(v = [0, 0.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-							}
-						}
-						translate(v = [0, 8.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-							}
-						}
-						translate(v = [0, 16.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-							}
-						}
-						translate(v = [0, 24.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-							}
-						}
-						translate(v = [0, 32.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-							}
-						}
-						translate(v = [0, 40.0000000000, 0]) {
-							union() {
-								translate(v = [0.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
-									}
-								}
-								translate(v = [8.0000000000, 0, 0]) {
-									linear_extrude(height = 1.6000000000) {
-										circle(d = 4.8000000000);
+						linear_extrude(height = 3) {
+							difference() {
+								square(center = true, size = [25.0000000000, 100.0000000000]);
+								translate(v = [-3, 0, 0]) {
+									union() {
+										union() {
+											translate(v = [-6.0000000000, 40.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [6.0000000000, 40.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [6.0000000000, -40.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [-6.0000000000, -40.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+										}
+										union() {
+											translate(v = [-6.0000000000, 30.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [6.0000000000, 30.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [6.0000000000, -30.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+											translate(v = [-6.0000000000, -30.0000000000]) {
+												circle(r = 1.5750000000);
+											}
+										}
 									}
 								}
 							}
@@ -262,40 +156,97 @@ union() {
 					}
 				}
 			}
-		}
-	}
-	linear_extrude(height = 3) {
-		difference() {
-			difference() {
+			linear_extrude(height = 3) {
 				difference() {
-					circle(r = 50.0000000000);
-					rotate(a = -60) {
-						translate(v = [0, -50.0000000000, 0]) {
-							square(center = true, size = [150.0000000000, 100.0000000000]);
+					difference() {
+						difference() {
+							circle(r = 50.0000000000);
+							rotate(a = -90) {
+								translate(v = [0, -50.0000000000, 0]) {
+									square(center = true, size = [150.0000000000, 100.0000000000]);
+								}
+							}
+							rotate(a = -90) {
+								translate(v = [0, -50.0000000000, 0]) {
+									square(center = true, size = [150.0000000000, 100.0000000000]);
+								}
+							}
+						}
+						union() {
+							rotate(a = -90) {
+								translate(v = [0, 35.0000000000, 0]) {
+									circle(d = 15);
+								}
+							}
 						}
 					}
-					rotate(a = -120) {
-						translate(v = [0, -50.0000000000, 0]) {
-							square(center = true, size = [150.0000000000, 100.0000000000]);
+					union() {
+						rotate(a = -45) {
+							translate(v = [0, 47.0000000000, 0]) {
+								circle(r = 1.5750000000);
+							}
 						}
-					}
-				}
-				square(center = true, size = [70, 56]);
-			}
-			union() {
-				rotate(a = -45) {
-					translate(v = [0, 47.0000000000, 0]) {
-						circle(r = 1.5000000000);
-					}
-				}
-				rotate(a = -135) {
-					translate(v = [0, 47.0000000000, 0]) {
-						circle(r = 1.5000000000);
+						rotate(a = -135) {
+							translate(v = [0, 47.0000000000, 0]) {
+								circle(r = 1.5750000000);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
+	/* Holes Below*/
+	intersection(){
+		union(){
+			union(){
+				union(){
+					linear_extrude(height = 25.0000000000){
+						union(){
+							union(){
+								union(){
+									rotate(a = -45){
+										translate(v = [0, 47.0000000000, 0]){
+											union(){
+												circle(r = 1.5750000000);
+											}
+										}
+									}
+									rotate(a = -135){
+										translate(v = [0, 47.0000000000, 0]){
+											union(){
+												circle(r = 1.5750000000);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+					translate(v = [41.0000000000, 0, 12.5000000000]){
+						rotate(a = [0, 90, 0]){
+							linear_extrude(height = 10){
+								difference(){
+									union() {
+										rotate(a = 0) {
+											translate(v = [0, 13.0000000000, 0]) {
+												circle(r = 8.1000000000);
+											}
+										}
+										rotate(a = 180) {
+											translate(v = [0, 13.0000000000, 0]) {
+												circle(r = 8.1000000000);
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} /* End Holes */ 
 }
 /***********************************************
 *********      SolidPython code:      **********
@@ -307,7 +258,7 @@ import os, sys
 
 from solid import *
 from solid.utils import *
-from fixings import M3
+from fixings import M3, M2
 from util import *
 
 from sensors import hc_sr04
@@ -318,33 +269,49 @@ import lego
 FA=0.1
 FS=0.5
 
-def bulkhead(radius=50.0):
-    def rangesensor():
-        return translate([radius - 15 - ABIT , 0, 35])(
-            rotate([0, 90, 0])(
-                linear_extrude(height=16)(hc_sr04.tranceiver_cut())))
+def bulkhead(radius=50.0, height=25.0, arch_length=35.0):
+    range_depth = 9.0
+    range_x = radius - range_depth
 
-    def lego_position(x):
-        return translate([radius - 6, 0, lego.pitch+3])(rotate([0, 90, 0])(x))
-    electronics = [max([70, aplus.d[0]]), max(50, aplus.d[1])]
-    return ((linear_extrude(height=50.0)(
-                (arc(radius, -60, +60) -
-                 arc(radius-3, -60, -40) -
-                 arc(radius-3, +40, +60) -
-                 radial(radius-3, [ -45, -135 ], circle(3) + forward(1.5)(square([6,3], True))) -
-                 square(electronics, True)) +
-                radial(radius-3, [ -45, -135 ], arc(6, 180, 0) - arc(3, 180, 0))) -
-            lego_position(linear_extrude(height=10)(lego.surface(2,6))) -
-            rangesensor()) +
-            lego_position(lego.studs(2,6)) +
-            linear_extrude(height=3)(
-                arc(radius, -60, +60) - 
-                square(electronics, True) -
-                radial(radius - 3, [ -45, -135 ], M3.cut())))
+    arch_cut = square([arch_length, radius*2], center=True)
+    electronics = (square(aplus.d, center=True) + square([70.0, 50.0], center=True))
+    def bounds():
+        return linear_extrude(height=height)(arc(radius, -90, +90) - electronics - arch_cut)
+
+    def rangesensor():
+        return translate([range_x, 0, height/2])(
+            rotate([0, 90, 0])(
+                linear_extrude(height=10)(
+                    offset(1.8)(hc_sr04.tranceiver_cut()) -
+                    hole()(hc_sr04.tranceiver_cut()))))
+
+    def flange():
+        def position(x):
+            return translate([arch_length/2, 0, height/2])(rotate([0,90,0])(x))
+        section = (square([height, 2*radius], center=True) -
+                   left(3)(corners([height-13, 2*(radius-10)], M3.cut()) +
+                           corners([height-13, 2*(radius-20)], M3.cut())))
+        return position(linear_extrude(height=3)(section))
+
+    def tall_profile():
+        return ((arc(radius, -90, +90) - arc(radius-3, -90, +90)) +
+                right(range_x + 1.5)(square([3, radius*2], center=True)) +
+                radial(radius-3, [ -45, -135 ], circle(r=3) - hole()(M3.cut())) -
+                radial(radius - 15, [-90], circle(d=15)))
+
+    return intersection()(
+        bounds(),
+        (linear_extrude(height=height)(tall_profile()) + 
+         rangesensor() +
+         flange() +
+         linear_extrude(height=3)(
+             arc(radius, -90, +90) -
+             radial(radius - 15, [-90], circle(d=15)) -
+             radial(radius - 3, [ -45, -135 ], M3.cut()))))
 
 def assembly():
     return bulkhead()
- 
+
 if __name__ == '__main__':
     out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir
     file_out = os.path.join( out_dir, 'rangebulkhead.scad')
