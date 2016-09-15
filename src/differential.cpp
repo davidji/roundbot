@@ -23,15 +23,19 @@ DifferentialDrive::DifferentialDrive(Wheel _left, Wheel _right, float _length)
   :left(_left),
    right(_right),
    length(_length),
-   balanceController(1.0, 0.0, 0.0, turning_period),
-   turningController(2.0, 0.0, 0.001, turning_period)  {
+   balanceController(1.0, 0.0, 0.0, pid_period),
+   turningController(10.0, 0.0, 0.00001, pid_period),
+   movingController(10.0, 0.0, 0.0, pid_period) {
 
     balanceController.setOutputLimits(0.5, 1.5);
     balanceController.setSetPoint(1.0);
     balanceController.setMode(AUTO_MODE);
 
-    turningController.setOutputLimits(-1.0, +1.0);
+    turningController.setOutputLimits(-0.75, +0.75);
     turningController.setMode(AUTO_MODE);
+
+    movingController.setOutputLimits(-0.75, +0.75);
+    movingController.setMode(AUTO_MODE);
 }
 
 void DifferentialDrive::start() {
@@ -40,16 +44,13 @@ void DifferentialDrive::start() {
 }
 
 void DifferentialDrive::turn(float radians) {
+    ticker.detach();
     left.read();
     right.read();
     turningController.setSetPoint(radians);
     turningController.setInputLimits(radians-pi, radians+pi);
     turningController.reset();
-    ticker.attach_us(this, &DifferentialDrive::turningTick, turning_period_us);
-}
-
-static int millis(float x) {
-    return x*1000;
+    ticker.attach_us(this, &DifferentialDrive::turningTick, pid_period_us);
 }
 
 void DifferentialDrive::turningTick() {
@@ -79,4 +80,24 @@ void Wheel::start() {
 float Wheel::peek() {
     float steps = encoder.peek();
     return steps*stepLength;
+}
+
+void DifferentialDrive::movingTick(void) {
+    float right_turn = right.peek();
+    float left_turn = left.peek();
+    float value = (right_turn + left_turn) / 2;
+    movingController.setProcessValue(value);
+    float output = movingController.compute();
+    right.out.drive(-output);
+    left.out.drive(-output);
+}
+
+void DifferentialDrive::move(float meters) {
+    ticker.detach();
+    left.read();
+    right.read();
+    movingController.setSetPoint(meters);
+    movingController.setInputLimits(meters-0.1, meters+0.1);
+    movingController.reset();
+    ticker.attach_us(this, &DifferentialDrive::movingTick, pid_period_us);
 }
