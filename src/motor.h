@@ -11,14 +11,16 @@ namespace motor {
 
 class MotorOut {
 private:
-    PwmOut in1;
-    PwmOut in2;
-    MotorMode _mode;
+    PwmOut out1;
+    PwmOut out2;
+    MotorMode default_mode;
+    float min_duty;
+    float max_duty;
 
     void write(float in1, float in2);
 
 public:
-    MotorOut(PinName in1, PinName in2, MotorMode mode = BRAKE);
+    MotorOut(PinName out1, PinName out2, MotorMode mode = BRAKE, float min = 0.0, float max = 1.0);
     void mode(MotorMode mode);
     void free();
     void brake();
@@ -31,8 +33,8 @@ private:
     AnalogIn in;
     float zero;
 public:
-    volatile float min;
-    volatile float max;
+    volatile float minimum;
+    volatile float maximum;
 
     MinMax(PinName in);
     bool read();

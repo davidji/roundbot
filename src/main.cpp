@@ -20,8 +20,9 @@ const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
 
 Serial console(D1, D0);
 
-motor::MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin);
-motor::MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin);
+// Break/drive mode gives nice linear response, but the first 10% produces little to no movement.
+motor::MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin, BRAKE, 0.1, 1.0);
+motor::MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin, BRAKE, 0.1, 1.0);
 motor::MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
 motor::MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
 
@@ -43,14 +44,14 @@ int percent(float f) {
 void print_encoder_info() {
     console.printf("min(l1): %02d max(l1): %02d min(l2): %02d max(l2): %02d "
            "min(r1): %02d max(r1): %02d min(r2): %02d max(r2): %02d ",
-           percent(leftEncoder.in1.min),
-           percent(leftEncoder.in1.max),
-           percent(leftEncoder.in2.min),
-           percent(leftEncoder.in2.max),
-           percent(rightEncoder.in1.min),
-           percent(rightEncoder.in1.max),
-           percent(rightEncoder.in2.min),
-           percent(rightEncoder.in2.max));
+           percent(leftEncoder.in1.minimum),
+           percent(leftEncoder.in1.maximum),
+           percent(leftEncoder.in2.minimum),
+           percent(leftEncoder.in2.maximum),
+           percent(rightEncoder.in1.minimum),
+           percent(rightEncoder.in1.maximum),
+           percent(rightEncoder.in2.minimum),
+           percent(rightEncoder.in2.maximum));
 }
 
 void motorsTestStep(float left, float right) {

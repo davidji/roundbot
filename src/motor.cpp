@@ -4,12 +4,13 @@
 
 namespace motor {
 
-MotorOut::MotorOut(PinName in1pin, PinName in2pin, MotorMode initial_mode)
-: in1(PwmOut(in1pin)), in2(PwmOut(in2pin)) {
-    in1.period_us(2500);
-    in2.period_us(2500);
+MotorOut::MotorOut(PinName out1pin, PinName out2pin, MotorMode initial_mode, float min, float max)
+: out1(PwmOut(out1pin)), out2(PwmOut(out2pin)),
+  min_duty(min), max_duty(max) {
+    out1.period_us(2500);
+    out2.period_us(2500);
     mode(initial_mode);
-    switch(_mode) {
+    switch(default_mode) {
     case BRAKE:
         brake();
     case FREE:
@@ -17,8 +18,8 @@ MotorOut::MotorOut(PinName in1pin, PinName in2pin, MotorMode initial_mode)
     }
 }
 
-void MotorOut::mode(MotorMode mode) {
-    _mode = mode == FREE ? FREE : BRAKE;
+void MotorOut::mode(MotorMode new_mode) {
+    default_mode = new_mode == FREE ? FREE : BRAKE;
 }
 
 void MotorOut::free() {
@@ -29,31 +30,36 @@ void MotorOut::brake() {
     write(1.0, 1.0);
 }
 
-void MotorOut::drive(float percent, MotorMode drive_mode) {
+void MotorOut::drive(float duty, MotorMode drive_mode) {
+    float normalised = fabs(duty)*(max_duty - min_duty) + min_duty;
     switch(drive_mode) {
     case DEFAULT:
-        drive(percent, _mode);
+        drive(duty, default_mode);
         break;
     case FREE:
-        if(percent < 0) {
-            write(fabs(percent), 0.0);
+        if(duty < 0) {
+            write(normalised, 0.0);
+        } else if(duty > 0) {
+            write(0.0, normalised);
         } else {
-            write(0.0, fabs(percent));
+            free();
         }
         break;
     case BRAKE:
-        if(percent < 0) {
-            write(1.0 - fabs(percent), 1.0);
+        if(duty < 0) {
+            write(1.0 - normalised, 1.0);
+        } else if(duty > 0) {
+            write(1.0, 1.0 - normalised);
         } else {
-            write(1.0, 1.0 - fabs(percent));
+            brake();
         }
         break;
     }
 }
 
 void MotorOut::write(float in1v, float in2v) {
-    in1.write(in1v);
-    in2.write(in2v);
+    out1.write(in1v);
+    out2.write(in2v);
 }
 
 
@@ -70,16 +76,16 @@ MotorEncoder::MotorEncoder(PinName in1pin, PinName in2pin)
 MinMax::MinMax(PinName inpin)
 : in(AnalogIn(inpin)),
   zero(0.5),
-  min(1.0),
-  max(0.0)
+  minimum(1.0),
+  maximum(0.0)
   { }
 
 inline bool MinMax::read() {
     float value = in.read();
-    if(max < value || min > value) {
-        min = fmin(value, min);
-        max = fmax(value, max);
-        zero = (min + max)/2;
+    if(maximum < value || minimum > value) {
+        minimum = fmin(value, minimum);
+        maximum = fmax(value, maximum);
+        zero = (minimum + maximum)/2;
     }
     return value > zero;
 }
