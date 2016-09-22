@@ -12,6 +12,7 @@ from batteries import cr123a
 from fixings import M2, M3, NO2
 from util import *
 from raspberrypi import aplus
+from nucleo import nucleo64
 
 
 
@@ -120,18 +121,6 @@ def chassis(radius=50.0,
             left(spacing/2)(screw_hole) +
             right(spacing/2)(screw_hole))
 
-    def arduino_mount():
-        """The plan is to use a nucleo board, which has arduino mounting screw points"""
-        # coordinates are in inches as per arduino spec, converted in loop
-        holes = union()(*(translate(inch_to_mm(coordinates))(circle(1.5))
-                         for coordinates in (
-                               [0.0 ,0.0 ,0.0],
-                               [1.9 ,0.05,0.0],
-                               [1.3 ,2.05,0.0],
-                               [0.2 ,2.05,0.0])))
-        # The nucleo board is ~82.5mm accross
-        return back(inch_to_mm(2.05)-12)(left(inch_to_mm(1.9/2))(holes))
-
     def pcb_70x50_mount():
         """This is a generic pcb with M2 corner holes that I have a few of"""
         return corners([46,66], M2.cut())
@@ -163,6 +152,8 @@ def chassis(radius=50.0,
         return (circle(radius) -
                 aplus.cut_holes() -
                 pcb_70x50_mount() -
+                rotate(90)(pcb_70x50_mount()) -
+                nucleo64.cut_holes() -
                 radial(0, [0,180], wheel_arch()) -
                 connecting_screw_holes() -
                 radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -

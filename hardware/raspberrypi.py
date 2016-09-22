@@ -9,4 +9,4 @@ class aplus:
 
     @staticmethod
     def cut_holes():
-        return corners([58,49], fixings.M3.cut())
+        return corners([58,49], fixings.M2_5.cut())

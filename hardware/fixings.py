@@ -16,6 +16,7 @@ class MetricScrew:
 
 M1_6 = MetricScrew(1.6, 1.25)
 M2 = MetricScrew(2.0, 1.6)
+M2_5 = MetricScrew(2.5, 2.05)
 M3 = MetricScrew(3.0, 2.5)
 
 """https://www.pololu.com/product/989, the screws are 2-56 with diameter 2.184mm"""
