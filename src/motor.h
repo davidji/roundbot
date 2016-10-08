@@ -49,7 +49,7 @@ private:
     Ticker ticker;
     bool in1_prev_value = false;
     volatile long delta_r;
-    StepFunctionPointer stepFn;
+    Callback<void (Direction)> stepCallback;
 
     static constexpr timestamp_t period_us = 50;
 
@@ -73,7 +73,7 @@ public:
      */
     template<typename T>
     void step(T* tptr, void (T::*mptr)(Direction)) {
-        stepFn.attach(tptr, mptr);
+        stepCallback.attach(tptr, mptr);
     }
 };
 

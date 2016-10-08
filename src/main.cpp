@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <string.h>
 #include "mbed.h"
 #include "motor.h"
 #include "differential.h"
@@ -120,6 +121,10 @@ void encoder_test() {
     }
 }
 
+int mm(float m) {
+    return m*1000;
+}
+
 void shell() {
     char buffer[40];
     char command[20];
@@ -143,10 +148,10 @@ void shell() {
                 if(value == 0.0) {
                     console.printf("error: could not parse argument as floating point %s\n", arg);
                 } else if(strcmp("move", command) == 0) {
-                    console.printf("move %dmm\n", (int)(value*1000));
+                    console.printf("move %dmm\n", mm(value));
                     differential.move(value);
                 } else if(strcmp("turn", command) == 0) {
-                    console.printf("turn %d\n", (int)(value*1000));
+                    console.printf("turn %d\n", mm(value));
                     differential.turn(value);
                 } else {
                     console.printf("error: unknown command %s\n", command);
@@ -154,12 +159,14 @@ void shell() {
             }
             break;
         case 1:
-            if(strcmp("test", command) == 0) {
+            if(strcmp("range", command) == 0) {
+                console.printf("range %dmm\n", mm(range.read()));
+            } else if(strcmp("progress", command) == 0) {
+                console.printf("progress left=%dmm, right=%dmm\n",
+                        mm(differential.left.peek()), mm(differential.right.peek()));
+            } else if(strcmp("test", command) == 0) {
                 console.printf("test\n");
                 motor_test_speeds();
-            } else if(strcmp("progress", command) == 0) {
-                console.printf("progress: left %dmm, right: %dmm\n",
-                        (int)(differential.left.peek()*1000), (int)(differential.right.peek()*1000));
             } else if(strcmp("calibrate", command) == 0) {
                 testTimer.start();
                 for(float duty = 0; duty <= 1.0; duty = duty + 0.01) {
@@ -179,9 +186,9 @@ void shell() {
 }
 
 int main() {
-    console.baud(115200);
+    console.baud(38400);
     console.printf("roundbot\n");
-    // range.start();
+    range.start();
     led1 = true;
 
     // encoder_test();

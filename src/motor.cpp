@@ -112,7 +112,7 @@ long MotorEncoder::peek() {
 }
 
 void MotorEncoder::start() {
-    ticker.attach_us(this, &MotorEncoder::sample, period_us);
+    ticker.attach_us(Callback<void ()>(this, &MotorEncoder::sample), period_us);
 }
 
 void MotorEncoder::stop() {
