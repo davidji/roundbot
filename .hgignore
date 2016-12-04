@@ -18,3 +18,15 @@ syntax: regexp
 ^\.pioenvs$
 syntax: regexp
 ^lib/readme\.txt$
+syntax: regexp
+^hardware/tb6612fng\.scad$
+syntax: regexp
+^hardware/cr123a_holder\.scad$
+syntax: regexp
+^hardware/micrometal-cover\.scad$
+syntax: regexp
+^hardware/micrometal-shoe\.scad$
+syntax: regexp
+^hardware/cr123a_holder\.stl$
+syntax: regexp
+^hardware/micrometal-cover\.stl$

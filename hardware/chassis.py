@@ -13,18 +13,25 @@ from fixings import M2, M3, NO2
 from util import *
 from raspberrypi import aplus
 from nucleo import nucleo64
+from gearmotor import micrometal
+
+import batteries
+from audioop import cross
 
 
 
 FA=0.1
 FS=0.5
 
+cr123_holder = batteries.PanelHolder(cell_length=34.5, cell_diameter=17.0)
+
 MOTOR_WIDTH=12.0
 CASTER_SPACING=26.0
-CR123A_FORWARD=MOTOR_WIDTH/2+1+cr123a.d[1]/2
+CR123A_FORWARD=MOTOR_WIDTH/2+cr123_holder.d[0]/2
 STANDOFF_HEIGHT=25
 BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+cr123a.d[1]
 CASTER_FORWARD=BATTERY_OUTSIDE_EDGE+2
+
 
 
 # Height of platform: the wheels are 16mm, less 3mm for the chassis
@@ -42,6 +49,7 @@ def chassis(radius=50.0,
             arch_length=35.0,
             caster=metal_3_8,
             min_wall = 2.0,
+            base_thickness=2.0,
             tapped=False):
 
 
@@ -75,40 +83,6 @@ def chassis(radius=50.0,
         backb = mirror([0,1,0])(frontb)
         return frontb + backb
 
-    def cr123a_cutout():
-        cutout = square([CR123A_LENGTH,CR123A_WIDTH], True)
-        return forward(CR123A_FORWARD)(cutout) + back(CR123A_FORWARD)(cutout)
-
-    def caster_mount_screw_holes(tapped=tapped):
-        return radial(caster.d[0]/2 + 3, [90, -90], M3.cut(tapped))
-
-    def pololu_caster_holes():
-        return (
-            caster.outline() +
-            caster_mount_screw_holes())
-
-    def caster_hole():
-        """I've bought some miniature 'ball transfer units' on ebay. They
-        are push fit. The total diameter is 16mm, and the body diameter is 13mm.
-        The total height is 10mm, so it won't protrude through the hole, but I will
-        need to provide 4mm of packing. I have 16mm delrin rod, but need a 13mm
-        drill bit for the hole"""
-        return forward((radius-5-6.5))(circle(6.5, True))
-
-    def for_each_caster(x):
-        return union()(*(rotate(a)(forward(CASTER_FORWARD + caster.d[1]/2)(x)) for a in (0, 180)))
-
-    def caster_holes():
-        return for_each_caster(pololu_caster_holes())
-
-    def pololu_caster_mount():
-        return up(1.5+1+2)(
-            square([CASTER_SPACING+8,8], True) -
-            caster_mount_screw_holes())
-
-    def pololu_caster_mounts():
-        return for_each_caster(pololu_caster_mount())
-
     def pen_hole():
         return circle(5, True)
 
@@ -137,10 +111,8 @@ def chassis(radius=50.0,
         return (
             circle(radius) -
             motor_cutouts() -
-            caster_holes() -
             connecting_screw_holes() -
             pololu_qtr_3a_holes() -
-            radial(CR123A_FORWARD, [0, 180], cr123a.cut_opening()) -
             radial(0, [ 0, 180], 
                    radial(radius-5, [ 30, -30 ], m3()) +
                    radial(radius-10, [30, -30, 45, -45 ], m3())) -
@@ -156,44 +128,83 @@ def chassis(radius=50.0,
                 nucleo64.cut_holes() -
                 radial(0, [0,180], wheel_arch()) -
                 connecting_screw_holes() -
-                radial(CR123A_FORWARD, [0, 180], cr123a.cut_holes()) -
                 radial(35, [90,270], arc(7.5, 180, 0)) -
                 radial(35, [0, 180], circle(d=15)))
 
     def lid():
         return (linear_extrude(height=3)(lid_cut()) -
-                rotate_extrude()(translate([-radius, 0])(polygon(([-ABIT,-ABIT],[3,-ABIT],[-ABIT,3])))) +
+                rotate_extrude()(translate([-radius, 0])(polygon(([0,0],[3,0],[0,3])))) +
                 radial(radius - 3, [+45, -45, +135, -135], (tube(r=3,ir=1.5,h=3))))
 
-    def body_cross_section(height):
-       return translate([radius-1,0])(
-            left(2)(square([3,3])) +
-            square([1, height]) +
-            union()(*(translate([0, y])(polygon([[0,-1],[-1, 0],[0,1]])) 
-                      for y in range(1, height, 5))) +
-            translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
+    def nucleo64_pillars():
+        height=cr123_holder.d[2] + 2
+        pillar = tube(h=height, ir=1.5, t=1.5)
+        return union()(*(translate(p)(pillar) for p in nucleo64.holes))
 
-    def body(height=21):
+    def body(height=21.0):
+        def body_cross_section():
+           return translate([radius-1,0])(
+                left(2)(square([3,3])) +
+                square([1, height]) +
+                union()(*(translate([0, y])(polygon([[0,-1],[-1, 0],[0,1]])) 
+                          for y in range(1, int(height), 5))) +
+                translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
+
+        def reinformcement():
+            wheel_wall = up(height/2)(cube([min_wall, 2*radius, height], center=True))
+            battery_wall = up(cr123_holder.d[2]/2)(cube([min_wall, 2*CR123A_FORWARD, cr123_holder.d[2]], center=True))
+            cross_wall = up(cr123_holder.d[2]/2)(
+                cube([2*(radius-arch_width), min_wall, cr123_holder.d[2]], center=True) -
+                cube([10, min_wall, cr123_holder.d[2]], center=True))
+            
+            return intersection()(
+                union()(
+                    left(radius - arch_width - min_wall/2.0)(wheel_wall),
+                    right(radius - arch_width - min_wall/2.0)(wheel_wall),
+                    left(5.0)(battery_wall),
+                    right(5.0)(battery_wall),
+                    forward(8.0+min_wall/2)(cross_wall),
+                    back(8.0+min_wall/2)(cross_wall)),
+                cylinder(r=radius, h=height))
+
         vstrut = left(1.25)(cube([2.5,2,height]))
-        return (rotate_extrude()(body_cross_section(height)) +
+        return (rotate_extrude()(body_cross_section()) +
+                reinformcement() +
                 radial(radius - 3, [a + 7.5 for a in range(0,360,15)], vstrut) -
                 radial(radius - 3, [+45, -45, +135, -135], up(height)(cylinder(r=3,h=3))))
 
-    def caster_plinth_cut():
-        return (square([caster.d[0]+12, caster.d[1]+2*min_wall], True) -
-                caster_mount_screw_holes(False) -
-                caster.screw_holes())
+    def base_chamfer():
+        return rotate_extrude()(polygon(([0,-3],[-3,0],[0,3])))
+
+    def battery_holders():
+        return radial(CR123A_FORWARD, [0, 180], rotate([0,0,90])(cr123_holder.body()))
+
+    def caster_holder():
+        return (linear_extrude(height=base_thickness*2)(offset(r=2)(caster.outline())) +
+                hole()(linear_extrude(height=base_thickness)(caster.outline())) +
+                hole()(up(base_thickness)(linear_extrude(height=base_thickness)(caster.screw_holes()))))
+
+    def casters():
+        return radial(CASTER_FORWARD + caster.d[1]/2, [0,180], caster_holder())
 
     def hc_sr04_mount():
         return translate([0, radius, 15])(rotate([90,0,0])(radial(18, [-90,90], pipe(r=10,t=2,h=8))))
 
+    def motors_mounts():
+        return radial(radius-arch_width, [90, -90], rotate([0, 0, 180])(micrometal.shoe()))
+
+
+
     def chassis():
-        return (linear_extrude(height=3)(base()) + 
+        return (linear_extrude(height=base_thickness)(base()) +
+                battery_holders() +
                 body() +
-                up(3)(radial(radius - 3, [+45, -45, +135, -135], 
-                             pipe(r=3, t=1.5, h=cr123a.d[2]))) +
-                forward(2*radius+min_wall)(lid()) +
-                linear_extrude(height=3)(radial(CR123A_FORWARD, [0, 180], caster_plinth_cut())))
+                casters() +
+                motors_mounts() +
+                nucleo64_pillars() +
+                up(base_thickness)(radial(radius - 3, [+45, -45, +135, -135], 
+                             pipe(r=3, t=1.5, h=cr123a.d[2]))) -
+                base_chamfer())
 
     def extras():
         return (motors() +

@@ -13,6 +13,7 @@ class MetricScrew:
 
     def cut(self, tapped=False):
         return circle(r=(tapped and self.tap or self.thread*tolerance)/2)
+        
 
 M1_6 = MetricScrew(1.6, 1.25)
 M2 = MetricScrew(2.0, 1.6)

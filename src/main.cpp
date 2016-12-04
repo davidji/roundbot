@@ -16,7 +16,7 @@ const float pi = 3.1415927;
 const float gearMotorRatio = 50.0;
 const int encoderArms = 3;
 const float wheelDiameter = 0.032;
-const float wheelBase = 0.084;
+const float wheelBase = 0.083;
 const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
 
 Serial console(D1, D0);
@@ -94,7 +94,7 @@ void motorsTest(float speed) {
 
 
 
-void motor_test_speeds() {
+void motorsTestSpeeds() {
     while(true) {
         for(int i = 1; i <= 4; ++i) {
             motorsTest(i*0.25);
@@ -109,7 +109,7 @@ void differential_test() {
     while (true) {
         differential.turn(pi/2.0);
         wait(3.0);
-        differential.move(0.05);
+        differential.move(0.1);
         wait(3.0);
         led1.write(!led1.read());
     }
@@ -117,7 +117,7 @@ void differential_test() {
 
 void encoder_test() {
     while (true) {
-        motor_test_speeds();
+        motorsTestSpeeds();
     }
 }
 
@@ -166,7 +166,7 @@ void shell() {
                         mm(differential.left.peek()), mm(differential.right.peek()));
             } else if(strcmp("test", command) == 0) {
                 console.printf("test\n");
-                motor_test_speeds();
+                motorsTestSpeeds();
             } else if(strcmp("calibrate", command) == 0) {
                 testTimer.start();
                 for(float duty = 0; duty <= 1.0; duty = duty + 0.01) {

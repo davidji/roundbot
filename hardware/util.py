@@ -1,8 +1,11 @@
 from __future__ import division
 from solid import *
 from solid.utils import *
+import os, os.path
 
-ABIT=0.1
+FA=0.1
+FS=0.5
+ABIT=0.0001
 
 def inch_to_mm(in_inches):
     try:
@@ -23,11 +26,22 @@ def corner_points(x, y, center=True):
 def corners(d, x, center=True):
     return union()(*(translate(point)(x) for point in corner_points(d[0], d[1], center)))
 
-def tube(r, h, ir = None, t = None, center=False):
+def tube(h, r = None, ir = None, t = None, center=False):
+    r = r or (ir + t)
+    ir = ir or (r - t)
     return (cylinder(r=r, h=h, center=center) -
-            down(ABIT)(cylinder(r=(t and r - t or ir), h=h+2*ABIT)))
+            cylinder(r=ir, h=h, center=center))
 
-def pipe(r, h, ir = None, t = None, center=False):
+def pipe(h, r = None, ir = None, t = None, center=False):
+    r = r or (ir + t)
+    ir = ir or (r - t)
     """A tube but with first class space"""
     return (cylinder(r=r, h=h, center=center) -
-            hole()(down(ABIT)(cylinder(r=(t and r - t or ir), h=h+2*ABIT))))
+            hole()(cylinder(r=ir, h=h, center=center)))
+
+def save(name, assembly):
+    out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir
+    file_out = os.path.join( out_dir, '%s.scad' % name)
+    a = assembly
+    print("%(name)s: SCAD file written to: \n%(file_out)s" % vars())
+    scad_render_to_file( a, file_out, file_header='$fa = %s; $fs = %s;' % (FA, FS), include_orig_code=True)
