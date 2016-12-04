@@ -16,8 +16,8 @@ from nucleo import nucleo64
 from gearmotor import micrometal
 
 import batteries
-from audioop import cross
-
+from honeycomb import honeycomb
+from numpy.core.defchararray import center
 
 
 FA=0.1
@@ -56,20 +56,8 @@ def chassis(radius=50.0,
     def m3():
         return M3.cut(tapped)
 
-    def wheel_arch(width=arch_width, length=arch_length):
+    def wheel_arch(width=arch_width, length=2*radius):
         return right(radius-width/2)(square([width, length], True))
-
-    # Using the pololu motor mounts is optional. I might also just glue
-    # an aluminium angle on the underside to form a bracket for the motor
-    # that allows the motor to be flush with the chassis.
-    def motor_mount():
-        hole = NO2.cut()
-        return right(radius-arch_width-4.25)(forward(9)(hole) + back(9)(hole))
-
-    def motor_cutouts():
-        right = motor_mount() + wheel_arch();
-        left = mirror([1,0,0])(right)
-        return left + right
 
     def motors():
         leftm = color(Steel)(left(radius-arch_width)(back(6)(cube([40.2,12,10], False))))
@@ -108,16 +96,12 @@ def chassis(radius=50.0,
         return hole()(radial(radius - 3, [+45, -45, +135, -135], M3.cut()))
 
     def base():
-        return (
-            circle(radius) -
-            motor_cutouts() -
-            connecting_screw_holes() -
-            pololu_qtr_3a_holes() -
-            radial(0, [ 0, 180], 
-                   radial(radius-5, [ 30, -30 ], m3()) +
-                   radial(radius-10, [30, -30, 45, -45 ], m3())) -
-            radial(0, [180],
-                   radial(radius-5, [ 15, 0, -15 ], m3())) -
+        return (intersection()(
+            (circle(radius) -
+             radial(0, [0,180], wheel_arch()) -
+             connecting_screw_holes()),
+            honeycomb(1.5, 1.0, 100.0, 100.0, center=True)) +
+            square([2*(radius-arch_width), 2*CR123A_FORWARD + cr123_holder.d[0]], center=True) -
             pen_hole())
 
     def lid_cut():
@@ -152,7 +136,8 @@ def chassis(radius=50.0,
 
         def reinformcement():
             wheel_wall = up(height/2)(cube([min_wall, 2*radius, height], center=True))
-            battery_wall = up(cr123_holder.d[2]/2)(cube([min_wall, 2*CR123A_FORWARD, cr123_holder.d[2]], center=True))
+            battery_wall = up(cr123_holder.d[2]/2)(
+                cube([min_wall, 2*(CR123A_FORWARD + 5.0) + cr123_holder.d[0], cr123_holder.d[2]], center=True))
             cross_wall = up(cr123_holder.d[2]/2)(
                 cube([2*(radius-arch_width), min_wall, cr123_holder.d[2]], center=True) -
                 cube([10, min_wall, cr123_holder.d[2]], center=True))
@@ -161,8 +146,8 @@ def chassis(radius=50.0,
                 union()(
                     left(radius - arch_width - min_wall/2.0)(wheel_wall),
                     right(radius - arch_width - min_wall/2.0)(wheel_wall),
-                    left(5.0)(battery_wall),
-                    right(5.0)(battery_wall),
+                    left(6.0)(battery_wall),
+                    right(6.0)(battery_wall),
                     forward(8.0+min_wall/2)(cross_wall),
                     back(8.0+min_wall/2)(cross_wall)),
                 cylinder(r=radius, h=height))

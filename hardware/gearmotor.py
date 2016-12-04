@@ -72,7 +72,7 @@ class micrometal:
             divider=right(wall_thickness)(cube([id[0], divider_thickness, id[2]]))
             return (
                 translate([wall_thickness, 1.0, 0])(
-                    cube(id) -
+                    forward(ABIT)(cube([id[0], id[1]+2*ABIT, id[2]])) -
                     up(id[2] - clip_radius)(
                         cube([clip_radius, id[1], clip_radius]) -
                         right(clip_radius)(rotate([-90, 0, 0])(cylinder(h=id[1], r=clip_radius))))) +

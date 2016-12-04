@@ -30,3 +30,9 @@ syntax: regexp
 ^hardware/cr123a_holder\.stl$
 syntax: regexp
 ^hardware/micrometal-cover\.stl$
+syntax: regexp
+^hardware/micrometal-shoe\.stl$
+syntax: regexp
+^hardware/hexagon\.scad$
+syntax: regexp
+^hardware/honeycomb\.scad$
