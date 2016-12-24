@@ -13,13 +13,12 @@ const PinName motor_right_in1_pin = D9;
 const PinName motor_right_in2_pin = D10;
 const PinName rf24_mosi_pin = D11;
 const PinName rf24_miso_pin = D12;
-const PinName unused_a7_pin = A7;
-const PinName rotary_encoder_right_b_pin = A6;
-const PinName rotary_encoder_right_a_pin = A5;
-const PinName rotary_encoder_left_b_pin = A4;
-const PinName rotary_encoder_left_a_pin = A3;
 const PinName reflectance_3_pin = A2;
 const PinName reflectance_2_pin = A1;
 const PinName reflectance_1_pin = A0;
 const PinName rf24_sck_pin = D13;
 
+const PinName rotary_encoder_right_b_pin = PC_2;
+const PinName rotary_encoder_right_a_pin = PC_3;
+const PinName rotary_encoder_left_b_pin = PC_1;
+const PinName rotary_encoder_left_a_pin = PC_0;

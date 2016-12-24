@@ -9,7 +9,7 @@
 #define _DIFFERENTIAL_H_
 
 #include "motor.h"
-#include "PID.h"
+#include <PID.h>
 
 using motor::MotorOut;
 using motor::MotorEncoder;
