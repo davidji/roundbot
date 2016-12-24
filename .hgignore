@@ -36,3 +36,9 @@ syntax: regexp
 ^hardware/hexagon\.scad$
 syntax: regexp
 ^hardware/honeycomb\.scad$
+syntax: regexp
+^hardware/header\.scad$
+syntax: regexp
+^hardware/header\.stl$
+syntax: regexp
+^hardware/nucleo_f303re_swd\.scad$

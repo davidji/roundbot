@@ -74,14 +74,18 @@ def chassis(radius=50.0,
     def pen_hole():
         return circle(5, True)
 
-    def pololu_qtr_3a_holes():
-        screw_hole = hole()(m3())
+    def pololu_qtr_3a_mount():
+        screw_mount = (pipe(ir=1.0, t=min_wall, h=base_thickness+2.0) + 
+                       hole()(up(base_thickness)(M2.nut.capture(2.0))))
         spacing=inch_to_mm(1.05)
+        cable_outline = square([1.1*inch_to_mm(0.5), 1.1*inch_to_mm(0.1)], True)
+        cable_slot = linear_extrude(height=base_thickness)(
+            offset(min_wall)(cable_outline) + hole()(cable_outline))
         QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + 2 + inch_to_mm(0.3)/2
         return forward(QTR_3A_FORWARD)(
-            back(inch_to_mm(0.10))(square([1.1*inch_to_mm(0.4), 1.1*inch_to_mm(0.1)], True)) +
-            left(spacing/2)(screw_hole) +
-            right(spacing/2)(screw_hole))
+            back(inch_to_mm(0.10))(cable_slot) +
+            left(spacing/2)(screw_mount) +
+            right(spacing/2)(screw_mount))
 
     def pcb_70x50_mount():
         """This is a generic pcb with M2 corner holes that I have a few of"""
@@ -134,12 +138,13 @@ def chassis(radius=50.0,
                           for y in range(1, int(height), 5))) +
                 translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
 
-        def reinformcement():
+        def reinforcement():
             wheel_wall = up(height/2)(cube([min_wall, 2*radius, height], center=True))
             battery_wall = up(cr123_holder.d[2]/2)(
                 cube([min_wall, 2*(CR123A_FORWARD + 5.0) + cr123_holder.d[0], cr123_holder.d[2]], center=True))
-            cross_wall = up(cr123_holder.d[2]/2)(
-                cube([2*(radius-arch_width), min_wall, cr123_holder.d[2]], center=True) -
+            cross_wall_h=micrometal.shoe_d()[2]+base_thickness
+            cross_wall = up(cross_wall_h/2)(
+                cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
                 cube([10, min_wall, cr123_holder.d[2]], center=True))
             
             return intersection()(
@@ -148,26 +153,29 @@ def chassis(radius=50.0,
                     right(radius - arch_width - min_wall/2.0)(wheel_wall),
                     left(6.0)(battery_wall),
                     right(6.0)(battery_wall),
-                    forward(8.0+min_wall/2)(cross_wall),
-                    back(8.0+min_wall/2)(cross_wall)),
+                    forward(7.0+min_wall/2)(cross_wall),
+                    back(7.0+min_wall/2)(cross_wall)),
                 cylinder(r=radius, h=height))
 
         vstrut = left(1.25)(cube([2.5,2,height]))
         return (rotate_extrude()(body_cross_section()) +
-                reinformcement() +
+                reinforcement() +
                 radial(radius - 3, [a + 7.5 for a in range(0,360,15)], vstrut) -
                 radial(radius - 3, [+45, -45, +135, -135], up(height)(cylinder(r=3,h=3))))
 
     def base_chamfer():
-        return rotate_extrude()(polygon(([0,-3],[-3,0],[0,3])))
+        return rotate_extrude()(translate([radius+ABIT, -ABIT])(polygon(([0,3],[0,0],[-3,0]))))
 
     def battery_holders():
         return radial(CR123A_FORWARD, [0, 180], rotate([0,0,90])(cr123_holder.body()))
 
     def caster_holder():
-        return (linear_extrude(height=base_thickness*2)(offset(r=2)(caster.outline())) +
+        return (linear_extrude(height=base_thickness*2+NO2.nut.h)(offset(r=2)(caster.outline())) +
                 hole()(linear_extrude(height=base_thickness)(caster.outline())) +
-                hole()(up(base_thickness)(linear_extrude(height=base_thickness)(caster.screw_holes()))))
+                hole()(up(base_thickness)(linear_extrude(height=base_thickness)(caster.screw_holes()))) +
+                hole()(up(base_thickness*2)(
+                    radial(caster.screw_spacing/2, [-90, 90], 
+                           NO2.nut.capture()))))
 
     def casters():
         return radial(CASTER_FORWARD + caster.d[1]/2, [0,180], caster_holder())
@@ -177,8 +185,20 @@ def chassis(radius=50.0,
 
     def motors_mounts():
         return radial(radius-arch_width, [90, -90], rotate([0, 0, 180])(micrometal.shoe()))
+    
+    def motor_connector_slots():
+        """The motors have an jst-ph connector on top of them. It's 14x8x5mm
+        and 17mm from the end. I have to be able to slide it all the way through
+        from the bottom, because I can't attach the wheel any other way"""
+        return radial(radius - arch_width - 17, [90, -90], hole()(
+            back(9)(left(7)(cube([14, 10, base_thickness+micrometal.gearbox_d[2]+5]))) +
+            translate([-7,-14,base_thickness+micrometal.gearbox_d[2]])(cube([14, 20, 5]))))
 
-
+    def recycling(resin=1):
+        t=unichr(0x2672 + resin)
+        t='a'
+        return translate([radius-arch_width,CR123A_FORWARD, 0])(
+            hole()(linear_extrude(1.0)(text(t))))
 
     def chassis():
         return (linear_extrude(height=base_thickness)(base()) +
@@ -186,10 +206,13 @@ def chassis(radius=50.0,
                 body() +
                 casters() +
                 motors_mounts() +
+                motor_connector_slots() +
                 nucleo64_pillars() +
-                up(base_thickness)(radial(radius - 3, [+45, -45, +135, -135], 
-                             pipe(r=3, t=1.5, h=cr123a.d[2]))) -
-                base_chamfer())
+                radial(radius - 3, [+45, -45, +135, -135], 
+                       pipe(r=3, t=1.5, h=cr123a.d[2]+base_thickness)) -
+                base_chamfer() +
+                recycling() +
+                pololu_qtr_3a_mount())
 
     def extras():
         return (motors() +

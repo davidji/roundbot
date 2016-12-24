@@ -29,13 +29,14 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/common"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8/TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE/TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos/rtx"/>
@@ -104,45 +105,47 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libraries/USBDevice/USBMSD"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.922107295" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_MORPHO"/>
+									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
+									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
+									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
+									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
+									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL_ASYNCH=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1474108296.21"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
 									<listOptionValue builtIn="false" value="DEVICE_I2CSLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F303RE"/>
 									<listOptionValue builtIn="false" value="DEVICE_PORTINOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F303K8"/>
-									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
-									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
-									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
 									<listOptionValue builtIn="false" value="TARGET_UVISOR_UNSUPPORTED"/>
-									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
-									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
-									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_RELEASE"/>
-									<listOptionValue builtIn="false" value="TARGET_STM"/>
-									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1471423726.33"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=030100"/>
+									<listOptionValue builtIn="false" value="TARGET_DEBUG"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=30201"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.149990277" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -154,13 +157,14 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/common"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8/TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE/TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos/rtx"/>
@@ -229,45 +233,47 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libraries/USBDevice/USBMSD"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1198905600" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_MORPHO"/>
+									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
+									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
+									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
+									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
+									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL_ASYNCH=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1474108296.21"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
 									<listOptionValue builtIn="false" value="DEVICE_I2CSLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F303RE"/>
 									<listOptionValue builtIn="false" value="DEVICE_PORTINOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F303K8"/>
-									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
-									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
-									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
 									<listOptionValue builtIn="false" value="TARGET_UVISOR_UNSUPPORTED"/>
-									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
-									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
-									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_RELEASE"/>
-									<listOptionValue builtIn="false" value="TARGET_STM"/>
-									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1471423726.33"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=030100"/>
+									<listOptionValue builtIn="false" value="TARGET_DEBUG"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=30201"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.762536863" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -279,13 +285,14 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/common"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/hal/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303K8/TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/hal/targets/cmsis/TARGET_STM/TARGET_STM32F3/TARGET_NUCLEO_F303RE/TOOLCHAIN_GCC_ARM"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/projects/bitbucket.org/davidji/roundbot/src"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/Motor_ID228"/>
+									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/lib/PID_ID185"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos/rtx"/>
@@ -354,45 +361,47 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/libraries/USBDevice/USBMSD"/>
 								</option>
 								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.884639970" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_MORPHO"/>
+									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
+									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
+									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
+									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
+									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
+									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
+									<listOptionValue builtIn="false" value="DEVICE_SERIAL_ASYNCH=1"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
+									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1474108296.21"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
 									<listOptionValue builtIn="false" value="DEVICE_I2CSLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
+									<listOptionValue builtIn="false" value="TARGET_STM32F303RE"/>
 									<listOptionValue builtIn="false" value="DEVICE_PORTINOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_MBED"/>
 									<listOptionValue builtIn="false" value="TARGET_RTOS_M4_M7"/>
-									<listOptionValue builtIn="false" value="DEVICE_RTC=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F303K8"/>
-									<listOptionValue builtIn="false" value="__CMSIS_RTOS"/>
-									<listOptionValue builtIn="false" value="TARGET_FF_ARDUINO"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
-									<listOptionValue builtIn="false" value="DEVICE_STDIO_MESSAGES=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_CORTEX_M"/>
-									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
 									<listOptionValue builtIn="false" value="TARGET_M4"/>
 									<listOptionValue builtIn="false" value="TARGET_UVISOR_UNSUPPORTED"/>
-									<listOptionValue builtIn="false" value="DEVICE_SERIAL=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_INTERRUPTIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_I2C=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTOUT=1"/>
-									<listOptionValue builtIn="false" value="__CORTEX_M4"/>
-									<listOptionValue builtIn="false" value="__MBED_CMSIS_RTOS_CM"/>
-									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SLEEP=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PORTIN=1"/>
-									<listOptionValue builtIn="false" value="TARGET_RELEASE"/>
-									<listOptionValue builtIn="false" value="TARGET_STM"/>
-									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303K8"/>
-									<listOptionValue builtIn="false" value="MBED_BUILD_TIMESTAMP=1471423726.33"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC_ARM"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPI=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_SPISLAVE=1"/>
-									<listOptionValue builtIn="false" value="TARGET_STM32F3"/>
-									<listOptionValue builtIn="false" value="DEVICE_ANALOGIN=1"/>
-									<listOptionValue builtIn="false" value="DEVICE_PWMOUT=1"/>
+									<listOptionValue builtIn="false" value="TARGET_NUCLEO_F303RE"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
-									<listOptionValue builtIn="false" value="TOOLCHAIN_object"/>
-									<listOptionValue builtIn="false" value="PLATFORMIO=030100"/>
+									<listOptionValue builtIn="false" value="TARGET_DEBUG"/>
+									<listOptionValue builtIn="false" value="TARGET_LIKE_CORTEX_M4"/>
+									<listOptionValue builtIn="false" value="DEVICE_ANALOGOUT=1"/>
+									<listOptionValue builtIn="false" value="DEVICE_CAN=1"/>
+									<listOptionValue builtIn="false" value="TOOLCHAIN_GCC"/>
+									<listOptionValue builtIn="false" value="PLATFORMIO=30201"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.549319812" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
@@ -415,7 +424,7 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/nucleo_f303k8"/>
+			<resource resourceType="PROJECT" workspacePath="/nucleo_f303re"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
@@ -457,6 +466,14 @@
 				<buildCommand>platformio</buildCommand>
 				<buildArguments>-f -c eclipse</buildArguments>
 				<buildTarget>run -t clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>false</runAllBuilders>
+			</target>
+			<target name="PlatformIO: Test" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>platformio</buildCommand>
+				<buildArguments>-f -c eclipse</buildArguments>
+				<buildTarget>test</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>false</runAllBuilders>

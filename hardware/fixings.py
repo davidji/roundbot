@@ -3,10 +3,32 @@ from solid import *
 from solid.utils import *
 
 from util import inch_to_mm
+from honeycomb import hexagon
 
 tolerance = 1.05
 
-class MetricScrew:
+class Nut:
+    def __init__(self, f, h):
+        self.f  = f
+        self.h = h
+
+    def outline(self):
+        return hexagon(r=self.f/2)
+    
+    def capture(self, h=None):
+        h = h or self.h*1.1
+        return linear_extrude(height=h)(offset(self.f/20)(self.outline()))
+    
+    def side_capture(self, depth):
+        return linear_extrude(height=self.h*1.1)(
+            offset(self.f/20)(
+                hull()(self.outline(), back(depth)(self.outline()))))
+
+class MetricNut(Nut):
+    def __init__(self, d):
+        Nut.__init__(self, d*1.6, d*0.8)
+        
+class AnyThread:
     def __init__(self, thread, tap):
         self.thread = thread
         self.tap = tap
@@ -15,10 +37,18 @@ class MetricScrew:
         return circle(r=(tapped and self.tap or self.thread*tolerance)/2)
         
 
-M1_6 = MetricScrew(1.6, 1.25)
-M2 = MetricScrew(2.0, 1.6)
-M2_5 = MetricScrew(2.5, 2.05)
-M3 = MetricScrew(3.0, 2.5)
+class MetricThread(AnyThread):
+    def __init__(self, thread, tap):
+        AnyThread.__init__(self, thread, tap)
+        self.nut = MetricNut(thread)
+
+
+M1_6 = MetricThread(1.6, 1.25)
+M2 = MetricThread(2.0, 1.6)
+M2_5 = MetricThread(2.5, 2.05)
+M3 = MetricThread(3.0, 2.5)
+
 
 """https://www.pololu.com/product/989, the screws are 2-56 with diameter 2.184mm"""
-NO2 = MetricScrew(inch_to_mm(0.08), inch_to_mm(0.08))
+NO2 = AnyThread(inch_to_mm(0.08), inch_to_mm(0.08))
+NO2.nut = Nut(inch_to_mm(3.0/16), inch_to_mm(1.0/16))

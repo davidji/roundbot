@@ -13,11 +13,12 @@ class metal_3_8:
         """Base outline of the caster centred around the origin
         with the screw holes along the x axis - i.e. x is the long axis
         """
-        tab = circle(r=(metal_3_8.d[0] - metal_3_8.screw_spacing)/2)
+        tab = circle(d=(metal_3_8.d[0] - metal_3_8.screw_spacing))
         tab_offset = metal_3_8.screw_spacing/2
-        return hull()(circle(r=metal_3_8.d[1]/2) +
-                      left(tab_offset)(tab) +
-                      right(tab_offset)(tab))
+        # add a little offset so the fit is comfortable
+        return offset(0.1)(hull()(circle(d=metal_3_8.d[1]) +
+                                  left(tab_offset)(tab) +
+                                  right(tab_offset)(tab)))
 
     @staticmethod
     def screw_holes():

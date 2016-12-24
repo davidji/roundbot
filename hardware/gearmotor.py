@@ -27,19 +27,20 @@ class micrometal:
         d = micrometal.gearbox_d[1]
         r = d/2
         x = w/2 + wall_thickness + FIXING.thread/2
-        screw = FIXING.cut()
+        nut = up(wall_thickness*2)(rotate([0,0,90])(FIXING.nut.capture(h=6.0-wall_thickness+ABIT)))
+        screw = up(wall_thickness)(linear_extrude(height=6.0)(FIXING.cut())) + nut
+        
         return forward(r)(left(x)(screw) + right(x)(screw))
 
     @staticmethod
     def cover_void(wall_thickness):
         id = micrometal.gearbox_d
         return hole()(
-            up(wall_thickness)(
-                linear_extrude(height=6.0)(micrometal.cover_screws(wall_thickness))) +
+            micrometal.cover_screws(wall_thickness) +
             down(ABIT)(
                 linear_extrude(height=wall_thickness+ABIT)(
                     offset(0.1)(micrometal.cover_profile(wall_thickness)))),
-            translate([-id[0]/2, 0, -id[2]+wall_thickness])(cube([id[0], id[1]+20.0, id[2]])))
+            translate([-id[0]/2, 0, -id[2]+wall_thickness])(cube([id[0], id[1]+22.0, id[2]])))
 
     @staticmethod
     def cover_profile(wall_thickness=2.0):
@@ -59,11 +60,15 @@ class micrometal:
                 id[2] + wall_thickness]
     
     @staticmethod
+    def shoe_d(wall_thickness = 2.0):
+        id = micrometal.gearbox_d
+        return [id[0] + 2 * wall_thickness, id[1] + 1.0, 
+            id[2] + wall_thickness]
+
+    @staticmethod
     def shoe(wall_thickness=2.0):
         id = micrometal.gearbox_d
-        od = [id[0] + 2*wall_thickness,
-              id[1] + 1.0,
-              id[2] + wall_thickness]
+        od = micrometal.shoe_d(wall_thickness)
         clip_radius = 2.2
         motor_length = 18.0
         
