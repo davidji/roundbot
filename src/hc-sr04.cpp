@@ -1,5 +1,5 @@
 
-#include <hc-sr04.h>
+#include "hc-sr04.h"
 
 HC_SR04::HC_SR04(PinName trig_pin, PinName echo_pin)
 : trig(DigitalOut(trig_pin))
