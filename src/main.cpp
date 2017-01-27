@@ -19,7 +19,7 @@ const float wheelDiameter = 0.032;
 const float wheelBase = 0.083;
 const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
 
-Serial console(D1, D0);
+Serial console(serial_tx_pin, serial_rx_pin);
 
 // Break/drive mode gives nice linear response, but the first 10% produces little to no movement.
 motor::MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin, BRAKE, 0.1, 1.0);

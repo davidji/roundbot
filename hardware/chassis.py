@@ -19,9 +19,8 @@ import batteries
 from honeycomb import honeycomb
 from numpy.core.defchararray import center
 
-
-FA=0.1
-FS=0.5
+from body import body
+import util
 
 cr123_holder = batteries.PanelHolder(cell_length=34.5, cell_diameter=17.0)
 
@@ -50,6 +49,7 @@ def chassis(radius=50.0,
             caster=metal_3_8,
             min_wall = 2.0,
             base_thickness=2.0,
+            body_height=21.0,
             tapped=False):
 
 
@@ -101,7 +101,7 @@ def chassis(radius=50.0,
 
     def base():
         return (intersection()(
-            (circle(radius) -
+            (circle(radius-3) -
              radial(0, [0,180], wheel_arch()) -
              connecting_screw_holes()),
             honeycomb(1.5, 1.0, 100.0, 100.0, center=True)) +
@@ -128,43 +128,6 @@ def chassis(radius=50.0,
         height=cr123_holder.d[2] + 2
         pillar = tube(h=height, ir=1.5, t=1.5)
         return union()(*(translate(p)(pillar) for p in nucleo64.holes))
-
-    def body(height=21.0):
-        def body_cross_section():
-           return translate([radius-1,0])(
-                left(2)(square([3,3])) +
-                square([1, height]) +
-                union()(*(translate([0, y])(polygon([[0,-1],[-1, 0],[0,1]])) 
-                          for y in range(1, int(height), 5))) +
-                translate([1, height])(polygon(([0,-3],[-3,0],[0,3]))))
-
-        def reinforcement():
-            wheel_wall = up(height/2)(cube([min_wall, 2*radius, height], center=True))
-            battery_wall = up(cr123_holder.d[2]/2)(
-                cube([min_wall, 2*(CR123A_FORWARD + 5.0) + cr123_holder.d[0], cr123_holder.d[2]], center=True))
-            cross_wall_h=micrometal.shoe_d()[2]+base_thickness
-            cross_wall = up(cross_wall_h/2)(
-                cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
-                cube([10, min_wall, cr123_holder.d[2]], center=True))
-            
-            return intersection()(
-                union()(
-                    left(radius - arch_width - min_wall/2.0)(wheel_wall),
-                    right(radius - arch_width - min_wall/2.0)(wheel_wall),
-                    left(6.0)(battery_wall),
-                    right(6.0)(battery_wall),
-                    forward(7.0+min_wall/2)(cross_wall),
-                    back(7.0+min_wall/2)(cross_wall)),
-                cylinder(r=radius, h=height))
-
-        vstrut = left(1.25)(cube([2.5,2,height]))
-        return (rotate_extrude()(body_cross_section()) +
-                reinforcement() +
-                radial(radius - 3, [a + 7.5 for a in range(0,360,15)], vstrut) -
-                radial(radius - 3, [+45, -45, +135, -135], up(height)(cylinder(r=3,h=3))))
-
-    def base_chamfer():
-        return rotate_extrude()(translate([radius+ABIT, -ABIT])(polygon(([0,3],[0,0],[-3,0]))))
 
     def battery_holders():
         return radial(CR123A_FORWARD, [0, 180], rotate([0,0,90])(cr123_holder.body()))
@@ -200,17 +163,34 @@ def chassis(radius=50.0,
         return translate([radius-arch_width,CR123A_FORWARD, 0])(
             hole()(linear_extrude(1.0)(text(t))))
 
+    def reinforcement():
+        wheel_wall = up(body_height/2)(cube([min_wall, 2*radius, body_height], center=True))
+        battery_wall = up(cr123_holder.d[2]/2)(
+            cube([min_wall, 2*(CR123A_FORWARD + 5.0) + cr123_holder.d[0], cr123_holder.d[2]], center=True))
+        cross_wall_h=micrometal.shoe_d()[2]+base_thickness
+        cross_wall = up(cross_wall_h/2)(
+            cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
+            cube([10, min_wall, cr123_holder.d[2]], center=True))
+        
+        return intersection()(
+            union()(
+                left(radius - arch_width - min_wall/2.0)(wheel_wall),
+                right(radius - arch_width - min_wall/2.0)(wheel_wall),
+                left(6.0)(battery_wall),
+                right(6.0)(battery_wall),
+                forward(7.0+min_wall/2)(cross_wall),
+                back(7.0+min_wall/2)(cross_wall)),
+            up(base_thickness)(cylinder(r=radius-1, h=body_height-base_thickness)))
+
     def chassis():
         return (linear_extrude(height=base_thickness)(base()) +
                 battery_holders() +
-                body() +
+                body(height=body_height) +
+                reinforcement() +
                 casters() +
                 motors_mounts() +
                 motor_connector_slots() +
                 nucleo64_pillars() +
-                radial(radius - 3, [+45, -45, +135, -135], 
-                       pipe(r=3, t=1.5, h=cr123a.d[2]+base_thickness)) -
-                base_chamfer() +
                 recycling() +
                 pololu_qtr_3a_mount())
 
@@ -229,13 +209,5 @@ def chassis(radius=50.0,
     return chassis() # + extras()
 
 
-def assembly():
-    return chassis()
- 
 if __name__ == '__main__':
-    out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir
-    file_out = os.path.join( out_dir, 'chassis.scad')
- 
-    a = assembly()
-    print("%(__file__)s: SCAD file written to: \n%(file_out)s"%vars())
-    scad_render_to_file( a, file_out, file_header='$fa = %s; $fs = %s;' % (FA, FS), include_orig_code=True)
+    util.save('chassis', chassis())

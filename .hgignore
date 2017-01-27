@@ -44,3 +44,23 @@ syntax: regexp
 ^hardware/header\.stl$
 syntax: regexp
 ^hardware/nucleo_f303re_swd\.scad$
+syntax: regexp
+^hardware/nucleo_f303re_swd\.stl$
+syntax: regexp
+^hardware/body\.scad$
+syntax: regexp
+^hardware/traceformer\.scad$
+syntax: regexp
+^hardware/traceformer\.stl$
+syntax: regexp
+^hardware/nucleo_stlink_swd\.scad$
+syntax: regexp
+^hardware/usb_battery_replacer_shoe\.scad$
+syntax: regexp
+^hardware/usb_battery_replacer_shoe\.stl$
+syntax: regexp
+^hardware/usb_battery_replacer_top\.scad$
+syntax: regexp
+^hardware/usb_battery_replacer_top\.stl$
+syntax: regexp
+^hardware/nucleo_stlink_swd\.stl$

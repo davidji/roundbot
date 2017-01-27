@@ -1,7 +1,7 @@
 #include "mbed.h"
 
-const PinName serial_tx_pin = D1;
-const PinName serial_rx_pin = D0;
+const PinName serial_tx_pin = PC_10;
+const PinName serial_rx_pin = PC_11;
 const PinName unused_D2 = D2;
 const PinName motor_left_in1_pin = D3;
 const PinName motor_left_in2_pin = D4;

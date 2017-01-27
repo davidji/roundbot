@@ -12,7 +12,7 @@ def hexagon(r):
     halfR=r/sqrt(3.0)
     return polygon([[0, R], [r, halfR], [r, -halfR], [0, -R], [-r, -halfR], [-r, halfR]])
 
-def honeycomb(r, t, w, h, center=False):
+def honeycomb(r, t, w, h, center=False, inverted=False):
     hole = hexagon(r-t/2)
     base = square([w,h])
     R=(2.0*r)/sqrt(3.0)
@@ -37,7 +37,8 @@ def honeycomb(r, t, w, h, center=False):
             x = row % 2 and r or 0.0
             for col in cols():
                 yield translate([x + col*2.0*r, y])(hole)
-    return square([w, h], center=center) - union()(*holes())
+    bound = square([w, h], center=center)
+    return inverted and intersection()(bound, union()(*holes())) or (bound - union()(*holes()))
     
 
 if __name__ == '__main__':

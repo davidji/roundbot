@@ -23,7 +23,7 @@ def pin_offset(x, y):
     return translate([tenths(0.5 + x), tenths(0.5 + y), 0])
 
 def header(rows, contacts, remove=()):
-    block = translate([-1, 0, 0])(cube([tenths(rows) + 2, tenths(contacts/rows), 14]))
+    block = translate([-1, -1, 0])(cube([tenths(rows) + 2, tenths(contacts/rows) + 2, 14]))
     pin = square_hole(tenths(1) - 1, 12)
     pins = union()(*(pin_offset(x, y)(pin) for x in range(rows) for y in range(contacts/rows)))
     void = hole()(square_hole(tenths(1)*1.1, 14))
@@ -33,6 +33,8 @@ def header(rows, contacts, remove=()):
 # For the nucleo f303re:
 #   SWD        | CN7
 #   ------------------------
+#   RX         | 0,0 | PC10
+#   TX         | 1,0 | PC11
 #   VDD_TARGET | 0,2 |    
 #   SWCLK      | 0,7 | PA14
 #   GND        | 1,3 |
@@ -40,8 +42,11 @@ def header(rows, contacts, remove=()):
 #   NRST       | 1,6 |
 #   SWO        | NC
 #   5V         | 1,2
-NUCLEO_F303RE_PINS = ((0,2), (0,7), (1,3), (0,6), (1,6), (1,2))
+NUCLEO_F303RE_PINS = ((0,0), (1,0), (0,2), (0,7), (1,3), (0,6), (1,6), (1,2))
+
+def stlink():
+    return header(1, 6, ((0, r) for r in range(5))) + translate([-4, -tenths(4) - 0.8, 0])(header(1,2, ((0,0), (0,1))))
 
 if __name__ == '__main__':
-    util.save('nucleo_f303re_swd', header(2, 18, NUCLEO_F303RE_PINS))
-    
+    util.save('nucleo_f303re_swd', header(2, 16, NUCLEO_F303RE_PINS))
+    util.save('nucleo_stlink_swd', stlink())
