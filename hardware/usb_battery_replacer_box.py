@@ -1,7 +1,7 @@
 from solid import *
 from solid.utils import *
 import util
-from util import corners, ABIT
+from util import origin, corners, ABIT
 from fixings import M3
 import boxes
 from honeycomb import honeycomb
@@ -30,14 +30,15 @@ width = converter.d[0] + 2*side_gap
 depth = converter.d[1] + usb.d[1] + 2
 
 def usb_box():
-    return (boxes.builder([width, depth], 2.0, 6.6, 11, connector=M3)
+    return (boxes.builder([width, depth], 2.0, 6.6, 11)
+            .screw_mounts(M3, origin([width/2, converter.d[1]/2])(*corners(*converter.dholes)))
+            .screw_mounts(M3, origin([width/2, depth])(*usb.holes))
             .lidVent([20, depth - 30])
             .hole(translate([side_gap + 5.0, 30.2])(circle(d=3)))
-            .well(translate([(width-11)/2, -wall_thickness])
-                   (square([11, 9+wall_thickness])))
+            .well(translate([(width-11)/2, -wall_thickness-ABIT])
+                   (square([11, 9+wall_thickness+ABIT])))
             .well(translate([width - side_gap - 15.6 - 2, 23.6])(square([2.0, 5.0])), t=0.5)
             .right(usb_port(), center=True))
-
 
 def usb_box_shoe():
     id = [width, depth, 6.6]
@@ -46,8 +47,6 @@ def usb_box_shoe():
     return (
         up(6.6)(forward((wall_thickness + usb.d[1])/2)(
             usb_box().base().build(center=True))) +
-        corners(converter.dholes, M3.standoff(5)) +
-        forward(usb_offset)(union()(*(translate(hole)(M3.standoff(5)) for hole in usb.holes))) -
         translate([-5, -(converter.d[1]/2)-wall_thickness - ABIT, id[2]])(cube([10, wall_thickness+ABIT, 12])) -
         translate([-7.5/2, usb_offset, id[2]])(cube([7.5, wall_thickness+ABIT, 3])) -
         down(2+ABIT)(linear_extrude(height=2+2*ABIT)(honeycomb(2.0, 1.0, vent[0], vent[1], center=True, inverted=True))))

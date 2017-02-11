@@ -1,66 +1,17 @@
 syntax: glob
 *~
 *.pyc
-hardware/chassis.scad
 hardware/chassis.dxf
 *.b\#[0-9]
 *.s\#[0-9]
 .gitignore
 .piolibdeps
 
+
 syntax: regexp
-^hardware/chassis\.scad$
-syntax: regexp
-^hardware/chassis\.stl$
-syntax: regexp
-^hardware/printedchassis\.scad$
-syntax: regexp
-^hardware/printedchassis\.stl$
+\.scad$
+\.stl$
 syntax: regexp
 ^\.pioenvs$
 syntax: regexp
 ^lib/readme\.txt$
-syntax: regexp
-^hardware/tb6612fng\.scad$
-syntax: regexp
-^hardware/cr123a_holder\.scad$
-syntax: regexp
-^hardware/micrometal-cover\.scad$
-syntax: regexp
-^hardware/micrometal-shoe\.scad$
-syntax: regexp
-^hardware/cr123a_holder\.stl$
-syntax: regexp
-^hardware/micrometal-cover\.stl$
-syntax: regexp
-^hardware/micrometal-shoe\.stl$
-syntax: regexp
-^hardware/hexagon\.scad$
-syntax: regexp
-^hardware/honeycomb\.scad$
-syntax: regexp
-^hardware/header\.scad$
-syntax: regexp
-^hardware/header\.stl$
-syntax: regexp
-^hardware/nucleo_f303re_swd\.scad$
-syntax: regexp
-^hardware/nucleo_f303re_swd\.stl$
-syntax: regexp
-^hardware/body\.scad$
-syntax: regexp
-^hardware/traceformer\.scad$
-syntax: regexp
-^hardware/traceformer\.stl$
-syntax: regexp
-^hardware/nucleo_stlink_swd\.scad$
-syntax: regexp
-^hardware/usb_battery_replacer_shoe\.scad$
-syntax: regexp
-^hardware/usb_battery_replacer_shoe\.stl$
-syntax: regexp
-^hardware/usb_battery_replacer_top\.scad$
-syntax: regexp
-^hardware/usb_battery_replacer_top\.stl$
-syntax: regexp
-^hardware/nucleo_stlink_swd\.stl$

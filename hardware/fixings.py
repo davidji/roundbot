@@ -16,8 +16,8 @@ class Nut:
         return hexagon(r=self.f/2)
     
     def capture(self, h=None):
-        h = h or self.h*1.1
-        return linear_extrude(height=h)(offset(self.f/20)(self.outline()))
+        h = h or self.h*1.2
+        return linear_extrude(height=h)(offset(0.6)(self.outline()))
     
     def side_capture(self, depth):
         return linear_extrude(height=self.h*1.1)(

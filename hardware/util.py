@@ -2,6 +2,7 @@ from __future__ import division
 from solid import *
 from solid.utils import *
 import os, os.path
+import numpy as np
 
 FA=0.1
 FS=0.5
@@ -19,12 +20,17 @@ def inch_to_mm(in_inches):
 def radial(r, angles, x):
     return union()(*( rotate(a)(forward(r)(x)) for a in angles))
 
-def corner_points(x, y, center=True):
+def vadd(a, b):
+    return [sum(x) for x in zip(a, b)]
+
+def origin(origin):
+    def dotranslate(*points):
+        return [ vadd(origin, point) for point in points ]
+    return dotranslate
+
+def corners(x, y, center=True):
     return (center and ([-x/2, y/2], [x/2, y/2], [x/2, -y/2], [-x/2, -y/2]) or
             ([x,0], [x,y], [0,y], [0,0]))
-
-def corners(d, x, center=True):
-    return union()(*(translate(point)(x) for point in corner_points(d[0], d[1], center)))
 
 def tube(h, r = None, ir = None, t = None, center=False):
     r = r or (ir + t)

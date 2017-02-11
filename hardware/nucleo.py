@@ -2,10 +2,7 @@ from solid import *
 from solid.utils import *
 
 from fixings import M3
-from util import corners, inch_to_mm
-
-def vadd(a, b):
-    return [sum(x) for x in zip(a, b)]
+from util import corners, inch_to_mm, vadd
 
 class nucleo64:
     d = [70,57.54,10]
