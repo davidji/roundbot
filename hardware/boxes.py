@@ -40,17 +40,23 @@ def builder(id, t, base_height, lid_height):
     
     box = extrude_bounds(*bounds) - down(base_height)(cube(id))
     
-    def connector_insets(connector):
-        screw_head_depth = connector.thread*0.6
+    def connector_insets(connector, internal=True):
         screw_head_r = connector.thread*1.3
-        screw_head_height = lid_height+wallt-screw_head_depth
-        return hole()(up(screw_head_height)(
-            linear_extrude(screw_head_depth+ABIT)(
-                hull()(
+
+        def head():
+            if internal:
+                return circle(r=screw_head_r)
+            else:
+                return hull()(
                     circle(r=screw_head_r) +
                     translate([-wallt-connector.thread/2, -connector.thread*2])(
-                        square([wallt, connector.thread*4]))))) + 
-                      down(base_height+wallt)(connector.nut.capture()))
+                        square([wallt, connector.thread*4])))
+        
+        screw_head_depth = connector.thread*0.6
+        screw_head_height = lid_height+wallt-screw_head_depth
+        return hole()(up(screw_head_height)(
+            linear_extrude(screw_head_depth+ABIT)(head())) +    
+            down(base_height+wallt)(connector.nut.capture()))
     
     def connector_bulkheads(connector):
         height = connector.nut.h*1.5
@@ -77,7 +83,7 @@ def builder(id, t, base_height, lid_height):
                 connectors(
                    up(floor)(
                        pipe(ir=fixing.thread/2, r=fixing.thread+1, h=ed[2])) +
-                   connector_insets(fixing)),
+                   connector_insets(fixing, internal=False)),
                 (outline + tabs, z, h))
         
         def right(self, profile, thickness=None, center=False):
@@ -91,12 +97,23 @@ def builder(id, t, base_height, lid_height):
                 cutout(profile, thickness)),
                 self.bounds)
         
+        def stacking(self, wells, wall_thickness = 1.0, height=None, thickness = 1.6):
+            height = height or base_height - thickness
+            walls = offset(delta=t)(wells)
+            return Builder(
+                self.box +
+                down(base_height)(linear_extrude(height)(walls)) + 
+                linear_extrude(lid_height)(walls) +
+                hole()(up(floor)(linear_extrude(height+wallt)(wells)) + 
+                                 linear_extrude(lid_height+wallt)(wells)),
+                self.bounds)
+            
         def well(self, wells, t=1.0, flange=wallt):
             return Builder(
                 self.box +
                 up(lid_height)(linear_extrude(height=wallt)(offset(delta=flange)(wells))) +
-                up(ABIT)(linear_extrude(height=lid_height-ABIT)(offset(delta=t)(wells))) +
-                hole()(linear_extrude(height=lid_height+wallt)(wells)),
+                    up(ABIT)(linear_extrude(height=lid_height-ABIT)(offset(delta=t)(wells))) +
+                    hole()(linear_extrude(height=lid_height+wallt)(wells)),
                 self.bounds)
 
         def hole(self, holes, flange=wallt):
@@ -160,6 +177,14 @@ def builder(id, t, base_height, lid_height):
         def base(self):
             (outline,_,_) = self.bounds
             return Builder(self.box, (outline, floor, -floor))
+        
+        def spacer(self):
+            """Make a spacer, which is the base walls, and connecting tabs.
+            It also includes stand offs, which only makes sense if they
+            touch the walls"""
+            (outline,_,_) = self.bounds
+            return Builder(self.box, (outline, -base_height, base_height))
+            
         
     return Builder(box, bounds)
             

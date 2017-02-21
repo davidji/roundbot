@@ -58,10 +58,21 @@ class arduino:
            .right(back(39.0)(usb_port()))
            .right(back(39.0)(usb_inset()), thickness=1.0))
 
+    ethernet_connector = translate([30 + edge_tolerance, d[1] - 17])(square([16.0, 21.0]))
+    ethernet_sheild_box = (boxes.builder([d[0], d[1]], 2.0, 5.0, d[2])
+                           .screw_mounts(M3, holes)
+                           .well(ethernet_connector)
+                           .stacking(offset(delta=0.25)(headers)))
+
     @staticmethod
     def cut_holes():
         return union()(*(translate(pos)(M3.cut()) for pos in arduino.holes))
 
-if __name__ == '__main__':
+def export_scad():
     util.save('arduino_base', arduino.box.base().build())
     util.save('arduino_lid', arduino.box.lid().build())
+    util.save('ethernet_sheild_base', arduino.ethernet_sheild_box.base().build())
+    util.save('ethernet_sheild_lid', arduino.ethernet_sheild_box.lid().build())
+
+if __name__ == '__main__':
+    export_scad()

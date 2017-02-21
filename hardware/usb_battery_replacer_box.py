@@ -62,6 +62,9 @@ def usb_box_top():
     return (forward((wall_thickness + usb.d[1])/2) (
                 usb_box().lid().build(center=True)))
 
-if __name__ == '__main__':
+def export_scad():
     util.save('usb_battery_replacer_shoe', usb_box_shoe())
     util.save('usb_battery_replacer_top', usb_box_top())
+
+if __name__ == '__main__':
+    export_scad()

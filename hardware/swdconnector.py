@@ -64,10 +64,12 @@ box = (boxes.builder([25.0,70.0], 2.0, 3.5, 10.0)
        .front(forward(43)(square([4.0, 8.0])))
        .front(forward(41)(left(2)(square([8.0, 12.0]))), thickness=1.0))
 
-if __name__ == '__main__':
+def export_scad():
     util.save('nucleo_f303re_swd', header(2, 16, NUCLEO_F303RE_PINS))
     util.save('nucleo_stlink_swd', stlink())
     util.save('nucleo_stlink_socket', stlink_socket())
     util.save('nucleo_stlink_base', box.base().build())
     util.save('nucleo_stlink_lid', box.lid().build())
-    util.save('nucleo_stlink_outline', box.bounds[0])
+
+if __name__ == '__main__':
+    export_scad()

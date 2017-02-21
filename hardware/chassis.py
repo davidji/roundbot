@@ -208,6 +208,8 @@ def chassis(radius=50.0,
 
     return chassis() # + extras()
 
+def export_scad():
+    util.save('chassis', chassis())
 
 if __name__ == '__main__':
-    util.save('chassis', chassis())
+    export_scad()
