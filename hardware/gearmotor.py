@@ -8,7 +8,7 @@ from fixings import M3, M2_5
 FIXING=M3
 
 class micrometal:
-    gearbox_d = [ 12.1, 9.0, 10.0 ] # W D H
+    gearbox_d = [ 12.1, 15.0, 10.0 ] # W D H
     
     @staticmethod
     def motor_profile(center=False):
@@ -17,8 +17,8 @@ class micrometal:
 
     @staticmethod
     def cover(wall_thickness=2.0):
-        return linear_extrude(height=wall_thickness)(
-            micrometal.cover_profile(wall_thickness) +
+        return (linear_extrude(height=wall_thickness)(
+            micrometal.cover_profile(wall_thickness)) +
             hole()(micrometal.cover_screws(wall_thickness)))
 
     @staticmethod
@@ -26,10 +26,9 @@ class micrometal:
         w = micrometal.gearbox_d[0]
         d = micrometal.gearbox_d[1]
         r = d/2
-        x = w/2 + wall_thickness + FIXING.thread/2
-        nut = up(wall_thickness*2)(rotate([0,0,90])(FIXING.nut.capture(h=6.0-wall_thickness+ABIT)))
-        screw = up(wall_thickness)(linear_extrude(height=6.0)(FIXING.cut())) + nut
-        
+        x = w/2 + wall_thickness + FIXING.nut.f/2
+        nut = up(wall_thickness*2)(FIXING.nut.capture(h=6.0-wall_thickness+ABIT))
+        screw = down(ABIT)(linear_extrude(height=6.0+2*ABIT)(FIXING.cut())) + nut
         return forward(r)(left(x)(screw) + right(x)(screw))
 
     @staticmethod
@@ -47,7 +46,7 @@ class micrometal:
         w = micrometal.gearbox_d[0]
         d = micrometal.gearbox_d[1]
         r = d/2
-        x = w/2 + wall_thickness + FIXING.thread/2
+        x = w/2 + wall_thickness + FIXING.nut.f/2
         end = forward(r)(circle(d=d))
         return (hull()(left(x)(end), right(x)(end)) +
                 (left(w/2)(square([w, d+1.0]))))

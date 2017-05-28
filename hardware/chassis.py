@@ -22,14 +22,19 @@ from numpy.core.defchararray import center
 from body import body
 import util
 
-cr123_holder = batteries.PanelHolder(cell_length=34.5, cell_diameter=17.0)
-
+CELL_DIAMETER = 17.0
+CELL_LENGTH = 34.5
 MOTOR_WIDTH=12.0
 CASTER_SPACING=26.0
-CR123A_FORWARD=MOTOR_WIDTH/2+cr123_holder.d[0]/2
+CR123A_FORWARD=MOTOR_WIDTH/2+CELL_DIAMETER/2+2.0
 STANDOFF_HEIGHT=25
-BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+1+cr123a.d[1]
-CASTER_FORWARD=BATTERY_OUTSIDE_EDGE+2
+BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+2+CELL_DIAMETER
+CASTER_FORWARD=BATTERY_OUTSIDE_EDGE
+
+battery_holder = batteries.PanelHolder(
+    cell_length=CELL_LENGTH, 
+    cell_diameter=CELL_DIAMETER,
+    cell_offsets = [ -CR123A_FORWARD, +CR123A_FORWARD])
 
 
 
@@ -49,7 +54,7 @@ def chassis(radius=50.0,
             caster=metal_3_8,
             min_wall = 2.0,
             base_thickness=2.0,
-            body_height=21.0,
+            body_height=battery_holder.d[2] + 2,
             tapped=False):
 
 
@@ -81,11 +86,12 @@ def chassis(radius=50.0,
         cable_outline = square([1.1*inch_to_mm(0.5), 1.1*inch_to_mm(0.1)], True)
         cable_slot = linear_extrude(height=base_thickness)(
             offset(min_wall)(cable_outline) + hole()(cable_outline))
-        QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + 2 + inch_to_mm(0.3)/2
+        QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + inch_to_mm(0.3)/2
         return forward(QTR_3A_FORWARD)(
-            back(inch_to_mm(0.10))(cable_slot) +
-            left(spacing/2)(screw_mount) +
-            right(spacing/2)(screw_mount))
+            rotate([0,0,180])(
+                back(inch_to_mm(0.10))(cable_slot) +
+                left(spacing/2)(screw_mount) +
+                right(spacing/2)(screw_mount)))
 
     def pcb_70x50_mount():
         """This is a generic pcb with M2 corner holes that I have a few of"""
@@ -105,7 +111,7 @@ def chassis(radius=50.0,
              radial(0, [0,180], wheel_arch()) -
              connecting_screw_holes()),
             honeycomb(1.5, 1.0, 100.0, 100.0, center=True)) +
-            square([2*(radius-arch_width), 2*CR123A_FORWARD + cr123_holder.d[0]], center=True) -
+            square([2*(radius-arch_width), 2*CR123A_FORWARD + battery_holder.d[0]], center=True) -
             pen_hole())
 
     def lid_cut():
@@ -124,13 +130,13 @@ def chassis(radius=50.0,
                 rotate_extrude()(translate([-radius, 0])(polygon(([0,0],[3,0],[0,3])))) +
                 radial(radius - 3, [+45, -45, +135, -135], (tube(r=3,ir=1.5,h=3))))
 
-    def nucleo64_pillars():
-        height=cr123_holder.d[2] + 2
-        pillar = tube(h=height, ir=1.5, t=1.5)
+    def nucleo64_pillars(insert_height=3.0):
+        height=battery_holder.d[2] + 2
+        pillar = tube(h=height, ir=1.5, t=1.5) + up(height-insert_height)(hole()(cylinder(d=M3.insert, h=insert_height)))
         return union()(*(translate(p)(pillar) for p in nucleo64.holes))
 
     def battery_holders():
-        return radial(CR123A_FORWARD, [0, 180], rotate([0,0,90])(cr123_holder.body()))
+        return rotate([0,0,90])(battery_holder.back() + battery_holder.screw_cover_mount())
 
     def caster_holder():
         return (linear_extrude(height=base_thickness*2+NO2.nut.h)(offset(r=2)(caster.outline())) +
@@ -138,7 +144,7 @@ def chassis(radius=50.0,
                 hole()(up(base_thickness)(linear_extrude(height=base_thickness)(caster.screw_holes()))) +
                 hole()(up(base_thickness*2)(
                     radial(caster.screw_spacing/2, [-90, 90], 
-                           NO2.nut.capture()))))
+                           NO2.nut.capture(h=4.0)))))
 
     def casters():
         return radial(CASTER_FORWARD + caster.d[1]/2, [0,180], caster_holder())
@@ -163,14 +169,25 @@ def chassis(radius=50.0,
         return translate([radius-arch_width,CR123A_FORWARD, 0])(
             hole()(linear_extrude(1.0)(text(t))))
 
+    def wheel_archs():
+        wheel_diameter=34
+        return intersection()(
+            cylinder(r=radius, h=body_height),
+            radial(radius - arch_width, [90, -90], 
+                      up(base_thickness + micrometal.gearbox_d[2]/2)(
+                          rotate([-90, 0, 0])(
+                              linear_extrude(height=arch_width)(
+                                  circle(d=wheel_diameter+2*min_wall) + 
+                                  hole()(circle(d=wheel_diameter)))))))
+
     def reinforcement():
         wheel_wall = up(body_height/2)(cube([min_wall, 2*radius, body_height], center=True))
-        battery_wall = up(cr123_holder.d[2]/2)(
-            cube([min_wall, 2*(CR123A_FORWARD + 5.0) + cr123_holder.d[0], cr123_holder.d[2]], center=True))
+        battery_wall = up(battery_holder.d[2]/2)(
+            cube([min_wall, 2*(CR123A_FORWARD), battery_holder.d[2]], center=True))
         cross_wall_h=micrometal.shoe_d()[2]+base_thickness
         cross_wall = up(cross_wall_h/2)(
             cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
-            cube([10, min_wall, cr123_holder.d[2]], center=True))
+            cube([10, min_wall, battery_holder.d[2]], center=True))
         
         return intersection()(
             union()(
@@ -188,10 +205,10 @@ def chassis(radius=50.0,
                 body(height=body_height) +
                 reinforcement() +
                 casters() +
+                wheel_archs() +
                 motors_mounts() +
                 motor_connector_slots() +
                 nucleo64_pillars() +
-                recycling() +
                 pololu_qtr_3a_mount())
 
     def extras():
@@ -210,6 +227,7 @@ def chassis(radius=50.0,
 
 def export_scad():
     util.save('chassis', chassis())
+    util.save('chassis-battery-cover', battery_holder.screw_cover())
 
 if __name__ == '__main__':
     export_scad()

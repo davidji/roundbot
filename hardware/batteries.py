@@ -39,24 +39,43 @@ class cr123a:
 
 class PanelHolder:
     """These holders are based on a pair of spring contacts:
-    keystone 209 (or 5209?). There's also provision to hold the 
-    battery in with a 10mm hook and loop strap. In my application
-    that's more convenient than a screw cover.
+    keystone 209 (or 5209?). They are not the only battery holder
+    that uses these connectors. See: 
+    https://www.thingiverse.com/thing:331394. I did look at that,
+    and it's where I found out about this particular connector,
+    but this code isn't really based on the above.
+    This has a screw cover option. It's really designed to go
+    on the bottom of a toy or robot, where that's necessary.
     """
 
-    def __init__(self, cell_length, cell_diameter, wall_thickness=2.0, spring_thickness = 4.0):
+    def __init__(self, 
+                 cell_length, 
+                 cell_diameter,
+                 cell_count=None,
+                 cell_offsets=None, 
+                 wall_thickness=2.0, 
+                 spring_thickness = 4.0):
         self.cell_length = cell_length
         self.spring_thickness = float(spring_thickness)
         self.cell_diameter = float(cell_diameter)
         self.wall_thickness = float(wall_thickness)
         self.d = [self.cell_diameter + 2*self.wall_thickness, 
                   self.cell_length + 2*self.wall_thickness, 
-                  self.cell_diameter + self.wall_thickness]
-    
+                  self.cell_diameter + 2*self.wall_thickness]
+        if cell_count and not cell_offsets:
+            self.cell_offsets = [(cell - cell_count/2.0 + 0.5)*cell_diameter for cell in range(cell_count)]
+        elif cell_offsets and not cell_count:
+            self.cell_offsets = cell_offsets
+        else:
+            raise ValueError("Specify one of cell_count, cell_offsets")
 
-    def body(self, t = 2):
 
-        terminal_spacing = self.cell_length + 2*self.spring_thickness
+    def _terminal_spacing(self):
+        return self.cell_length + 2 * self.spring_thickness
+
+    def _cell_back(self):
+        """This is the back shell for a single cell"""
+        terminal_spacing = self._terminal_spacing()
         cell_radius = self.cell_diameter/2
         shell_radius = cell_radius + self.wall_thickness
 
@@ -86,7 +105,7 @@ class PanelHolder:
             r = cell_radius
             # Getting the contact in the middle is about getting the edge
             # the connector sits on the right height. The edge needs to be
-            # half the height above the center.
+            # half the height above the centre.
             tab = mirror([0,1,0])(
                 translate([-width/2, height/2, -tab_t])(
                     cube([width, shell_radius - height/2, edge_t + ear_t + tab_t])) +
@@ -100,13 +119,75 @@ class PanelHolder:
                 translate([-d/2, 0, 0])(square([d, cell_radius + ABIT]))))
         
         def shell():
+            # The shell, and everything it depends on is constructed vertically
             return (linear_extrude(center=True,
                                    height=terminal_spacing+2*self.wall_thickness)
                     (outer_profile()) +
                     battery_cavity() +
-                    tab_slots() +
-                    velcro_slot())
+                    tab_slots())
 
+        return up(shell_radius)(rotate([-90, 0, 0])(shell()))
 
-        return up(cell_radius)(rotate([-90, 0, 0])(shell()))
+    def back(self, t = 2.0):
+        """Back shell for the panel holder"""
+        return union()(*(translate([offset, 0, 0])(self._cell_back()) for offset in self.cell_offsets))
 
+    def _cell_cutouts(self):
+       return (translate([offset, 0, 0])(
+           square([self.cell_diameter,
+                   2*self.spring_thickness + self.cell_length], 
+                  center=True))
+               for offset in self.cell_offsets)
+
+    def panel(self, flange = 6.0):
+        return (linear_extrude(height=self.wall_thickness)(
+            offset(delta=self.wall_thickness+flange)(
+                hull()(*self._cell_cutouts())) + hole()(union()(*self._cell_cutouts()))) +
+                hole()(self.screw_cover()))
+
+    def _screw_positions(self, fixing):
+        terminal_spacing = self._terminal_spacing()
+        x = self.cell_offsets[-1] + self.cell_diameter/2 + self.wall_thickness + fixing.thread/2
+        y = terminal_spacing/2 - fixing.thread
+        return [[x, y], [x, -y]]
+
+    def _screw_tabs_outline(self, fixing=M3):
+        t = self.wall_thickness
+        screw_tab = (translate([-fixing.thread - t, -fixing.thread])(square([fixing.thread + t, fixing.thread*2])) +
+                     circle(r=fixing.thread))
+        return union()(*(translate(p)(screw_tab) for p in self._screw_positions(fixing)))
+
+    def _hook_positions(self, w):
+        terminal_spacing = self._terminal_spacing()
+        x = self.cell_offsets[0] - self.cell_diameter/2
+        y = (terminal_spacing - w)/2
+        return [[x, y], [x, -y]]
+
+    def _cover_hooks(self, w):
+        hook = translate([-self.wall_thickness, -w/2])(square([self.wall_thickness, w]))
+        return hole()(up(self.wall_thickness)(linear_extrude(height=self.wall_thickness*1.5)(
+            union()(*(translate(p)(hook) for p in self._hook_positions(w))))))
+
+    def _screw_cover_outline(self, fixing):
+        return (hull()(*self._cell_cutouts()) + 
+                self._screw_tabs_outline(fixing))
+
+    def screw_cover_mount(self, fixing=M3, inset_height=3.0, hook_width=7.0):
+        return (
+            linear_extrude(height=self.wall_thickness+inset_height)(
+                offset(r=self.wall_thickness)(self._screw_tabs_outline(fixing)) -
+                hole()(union()(*(translate(p)(circle(d=fixing.insert)) for p in self._screw_positions(fixing))))) +
+            self.panel(0) +
+            self._cover_hooks(hook_width) +
+            hole()(linear_extrude(height=self.wall_thickness)(offset(delta=0.5)(self._screw_cover_outline(fixing)))))
+    
+    def screw_cover(self, fixing=M3, hook_width=7.0):
+        t = self.wall_thickness
+        hook = up(t)(linear_extrude(height=t)(square([2*t, hook_width-1.0], center=True)))
+        return (
+            linear_extrude(height=t)(
+                self._screw_cover_outline(fixing) +
+                hole()(union()(*(translate(p)(fixing.cut()) for p in self._screw_positions(fixing)))) -
+                right(self.cell_offsets[-1] + self.cell_diameter/2)(circle(d=10.0))) +
+            union()(*(translate(p)(hook) for p in self._hook_positions(hook_width))))
+    
