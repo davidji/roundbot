@@ -15,3 +15,7 @@ syntax: regexp
 ^\.pioenvs$
 syntax: regexp
 ^lib/readme\.txt$
+syntax: regexp
+^hardware/nucleo_f303re_swd\.stl\.deps$
+syntax: regexp
+\.deps$
