@@ -48,7 +48,9 @@ class MetricThread(AnyThread):
 
 
 M1_6 = MetricThread(1.6, 1.25)
-M2 = MetricThread(2.0, 1.6, 3.6)
+# M2 - the insert size is meant to be 3.6 but I'm finding that 
+# a bit loose, so I've set it at 3.5 for now
+M2 = MetricThread(2.0, 1.6, 3.5) 
 M2_5 = MetricThread(2.5, 2.05, 3.8)
 M3 = MetricThread(3.0, 2.5, 4.0)
 

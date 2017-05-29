@@ -17,7 +17,6 @@ from gearmotor import micrometal
 
 import batteries
 from honeycomb import honeycomb
-from numpy.core.defchararray import center
 
 from body import body
 import util
