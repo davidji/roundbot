@@ -60,16 +60,16 @@ def eyes(r=50.0, l=70.0, t=2.0, insert_depth=3.2, arch_width=12.0):
     socketdepth = 10.0
     eyeback = eyeforward - socketdepth
     depth = eyedepth + socketdepth
-    d = eyewidth + 2*t
+    height = eyewidth + 2*t
 
     def eyesposition(a):
-        return translate([0, eyeforward, d/2])(rotate([-90, 0, 0])(a))
+        return translate([0, eyeforward, height/2])(rotate([-90, 0, 0])(a))
     def eyepositions(a):
         b = eyesposition(a)
         return left(spacing/2)(b) + right(spacing/2)(b)
 
-    eyesbody = body.body(radius=r, height=d)
-    # skull = tube(r=r, t=t, h=d)
+    eyesbody = body.body(radius=r, height=height)
+    # skull = tube(r=r, t=t, h=height)
     eyesection = (square([spacing, eyewidth], center=True) + 
                   left(spacing/2)(circle(d=eyewidth)) +
                   right(spacing/2)(circle(d=eyewidth)))
@@ -79,11 +79,17 @@ def eyes(r=50.0, l=70.0, t=2.0, insert_depth=3.2, arch_width=12.0):
     backfixing = hole()(
                 down(ABIT)(linear_extrude(6.0+2*ABIT)((M3.cut()))) +
                 up(t)(M3.nut.side_capture(M3.thread+ABIT)))
-    backfixings = translate([0, eyesbody.end_module_back(), d/2])(rotate([-90, 0, 0])(
-        forward(d/2-M3.thread)(rotate([0,0,180])(backfixing)) +
-        back(d/2 - M3.thread)(backfixing)))
+    backfixings = translate([0, eyesbody.end_module_back(), height/2])(rotate([-90, 0, 0])(
+        forward(height/2-M3.thread)(rotate([0,0,180])(backfixing)) +
+        back(height/2 - M3.thread)(backfixing)))
 
     class Eyes:
+        def body(self):
+            return eyesbody
+        
+        def height(self):
+            return height
+        
         def eyes(self):
             return intersection()(
                 eyesbody.end_module_bounds(),
@@ -94,7 +100,7 @@ def eyes(r=50.0, l=70.0, t=2.0, insert_depth=3.2, arch_width=12.0):
                 backfixings)
             
         def cradle(self):
-            return linear_extrude(height=d*1.2)(
+            return linear_extrude(height=height*1.2)(
                 translate([-r, eyeback])(
                     square([2*r, depth+2*t])) - 
                 circle(r=r))

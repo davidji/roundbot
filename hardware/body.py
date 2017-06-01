@@ -21,6 +21,12 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
     corner = (radius - 3)/sqrt(2)
     
     class Body:
+        def height(self):
+            return height
+        
+        def radius(self):
+            return radius
+        
         def pillars(self):
             return radial(radius - 3, [+45, -45, +135, -135], pillar)
         
@@ -30,6 +36,9 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
         
         def body(self):
             return self.pillars() + self.shell()
+
+        def body_bounds(self):
+            return cylinder(h=height, r=radius)
 
         def end_module_back(self):
             return corner-12.0
@@ -68,7 +77,9 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
             screw_head_r = M3.thread*1.1
             fix = hole()(
                 down(ABIT)(linear_extrude(6.0+2*ABIT)((M3.cut()))) +
-                linear_extrude(3.0)(circle(r=screw_head_r) + forward(screw_head_r)(square([2*screw_head_r, screw_head_r], center=True))))
+                down(3.0)(linear_extrude(6.0)(
+                    circle(r=screw_head_r) + 
+                    forward(screw_head_r)(square([2*screw_head_r, screw_head_r], center=True)))))
             mount = self._mount(fix, [radius-arch_width-t+6.0, corner-6.0, height/2])
             return intersection()(self.side_module_bounds(), mount + mirror([0,1,0])(mount))
 
