@@ -9,7 +9,7 @@ FIXING=M3
 
 class micrometal:
     gearbox_d = [ 12.1, 15.0, 10.0 ] # W D H
-    
+
     @staticmethod
     def motor_profile(center=False):
         centered = intersection()(circle(d=12), square([12, 10], center=True))
@@ -50,14 +50,14 @@ class micrometal:
         end = forward(r)(circle(d=d))
         return (hull()(left(x)(end), right(x)(end)) +
                 (left(w/2)(square([w, d+1.0]))))
-    
+
     @staticmethod
     def body_d(wall_thickness=2.0):
         id = micrometal.gearbox_d
         return [id[0] + 2*wall_thickness,
                 id[1] + 1.0,
                 id[2] + wall_thickness]
-    
+
     @staticmethod
     def shoe_d(wall_thickness = 2.0):
         id = micrometal.gearbox_d
@@ -70,7 +70,7 @@ class micrometal:
         od = micrometal.shoe_d(wall_thickness)
         clip_radius = 2.2
         motor_length = 18.0
-        
+
         def gearbox_void():
             divider_thickness=0.825
             divider=right(wall_thickness)(cube([id[0], divider_thickness, id[2]]))

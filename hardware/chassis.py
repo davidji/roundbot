@@ -19,6 +19,7 @@ import batteries
 from honeycomb import honeycomb
 
 from body import body
+from eyes import eyes
 import util
 
 CELL_DIAMETER = 17.0
@@ -31,7 +32,7 @@ BATTERY_OUTSIDE_EDGE=MOTOR_WIDTH/2+2+CELL_DIAMETER
 CASTER_FORWARD=BATTERY_OUTSIDE_EDGE
 
 battery_holder = batteries.PanelHolder(
-    cell_length=CELL_LENGTH, 
+    cell_length=CELL_LENGTH,
     cell_diameter=CELL_DIAMETER,
     cell_offsets = [ -CR123A_FORWARD, +CR123A_FORWARD])
 
@@ -47,15 +48,15 @@ battery_holder = batteries.PanelHolder(
 # I could leave the possibility of batteries on the underside open too,
 # then a single chassis plate might well be enough.
 
-def chassis(radius=50.0,
+def chassis(body=eyes().body(),
             arch_width=12.0,
             arch_length=35.0,
             caster=metal_3_8,
             min_wall = 2.0,
             base_thickness=2.0,
-            body_height=battery_holder.d[2] + 2,
             tapped=False):
 
+    radius = body.radius()
 
     def m3():
         return M3.cut(tapped)
@@ -153,7 +154,7 @@ def chassis(radius=50.0,
 
     def motors_mounts():
         return radial(radius-arch_width, [90, -90], rotate([0, 0, 180])(micrometal.shoe()))
-    
+
     def motor_connector_slots():
         """The motors have an jst-ph connector on top of them. It's 14x8x5mm
         and 17mm from the end. I have to be able to slide it all the way through
@@ -171,7 +172,7 @@ def chassis(radius=50.0,
     def wheel_archs():
         wheel_diameter=34
         return intersection()(
-            cylinder(r=radius, h=body_height),
+            cylinder(r=radius, h=body.height()),
             radial(radius - arch_width, [90, -90], 
                       up(base_thickness + micrometal.gearbox_d[2]/2)(
                           rotate([-90, 0, 0])(
@@ -180,14 +181,14 @@ def chassis(radius=50.0,
                                   hole()(circle(d=wheel_diameter)))))))
 
     def reinforcement():
-        wheel_wall = up(body_height/2)(cube([min_wall, 2*radius, body_height], center=True))
+        wheel_wall = up(body.height()/2)(cube([min_wall, 2*radius, body.height()], center=True))
         battery_wall = up(battery_holder.d[2]/2)(
             cube([min_wall, 2*(CR123A_FORWARD), battery_holder.d[2]], center=True))
         cross_wall_h=micrometal.shoe_d()[2]+base_thickness
         cross_wall = up(cross_wall_h/2)(
             cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
             cube([10, min_wall, battery_holder.d[2]], center=True))
-        
+
         return intersection()(
             union()(
                 left(radius - arch_width - min_wall/2.0)(wheel_wall),
@@ -196,36 +197,43 @@ def chassis(radius=50.0,
                 right(6.0)(battery_wall),
                 forward(7.0+min_wall/2)(cross_wall),
                 back(7.0+min_wall/2)(cross_wall)),
-            up(base_thickness)(cylinder(r=radius-1, h=body_height-base_thickness)))
+            up(base_thickness)(cylinder(r=radius-1, h=body.height()-base_thickness)))
 
-    def chassis():
-        return (linear_extrude(height=base_thickness)(base()) +
-                battery_holders() +
-                body(height=body_height) +
-                reinforcement() +
-                casters() +
-                wheel_archs() +
-                motors_mounts() +
-                motor_connector_slots() +
-                nucleo64_pillars() +
-                pololu_qtr_3a_mount())
+    class Chassis:
+        def chassis(self):
+            return (linear_extrude(height=base_thickness)(base()) +
+                    battery_holders() +
+                    reinforcement() +
+                    casters() +
+                    wheel_archs() +
+                    motors_mounts() +
+                    motor_connector_slots() +
+                    nucleo64_pillars() +
+                    pololu_qtr_3a_mount())
 
-    def extras():
-        return (motors() +
-            cr123a_batteries() +
-            wheels() +
-            pololu_caster_mounts() +
-            standoffs())
+        def fullbody(self):
+            return (self.chassis() + body.body())
 
-    def plates():
-        return (base() + 
-                radial(CR123A_FORWARD, [0, 180], caster_plinth_cut()) +
-                forward(2*radius+min_wall)(lid()))
+        def modularbody(self):
+            return ((self.chassis() - body.end_modules_bounds())  + body.sides())
 
-    return chassis() # + extras()
+        def extras():
+            return (motors() +
+                cr123a_batteries() +
+                wheels() +
+                pololu_caster_mounts() +
+                standoffs())
+
+        def plates():
+            return (base() + 
+                    radial(CR123A_FORWARD, [0, 180], caster_plinth_cut()) +
+                    forward(2*radius+min_wall)(lid()))
+
+    return Chassis() # + extras()
 
 def export_scad():
-    util.save('chassis', chassis())
+    util.save('chassis', chassis().fullbody())
+    util.save('chassis-modular', chassis().modularbody())
     util.save('chassis-battery-cover', battery_holder.screw_cover())
 
 if __name__ == '__main__':

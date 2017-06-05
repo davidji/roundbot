@@ -26,6 +26,6 @@ def former(rows, cols):
                         cube([0.5, 0.5, height]) +
                         right(width - 0.5)(cube([0.5, 0.5, height])))
                      for col in range(cols + 1))))
-      
+
 if __name__ == '__main__':
     util.save('traceformer', former(12, 12))

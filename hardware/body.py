@@ -2,11 +2,12 @@ from math import sqrt
 from solid import *
 from solid.utils import *
 import util
-from util import radial, pipe, ABIT
+from util import radial, pipe, ABIT, vadd
 from fixings import M3
+from aptsources.distinfo import Mirror
 
 def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
-    
+
     def body_cross_section():
        return translate([radius-1,0])(
             translate([1,0])(polygon(([-3, 3], [0, 6], [0, 0], [-3, 0]))) +
@@ -19,21 +20,21 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
     pillar = (linear_extrude(height)(circle(d=6.0) + hole()(M3.cut())) +
               hole()(up(height - insert_height)(cylinder(d=M3.insert, h=insert_height))))
     corner = (radius - 3)/sqrt(2)
-    
+
     class Body:
         def height(self):
             return height
-        
+
         def radius(self):
             return radius
-        
+
         def pillars(self):
             return radial(radius - 3, [+45, -45, +135, -135], pillar)
-        
+
         def shell(self):
             return (rotate_extrude()(body_cross_section()) +
                     radial(radius - 3, [a + 7.5 for a in range(0,360,15)], vstrut))
-        
+
         def body(self):
             return self.pillars() + self.shell()
 
@@ -42,7 +43,7 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
 
         def end_module_back(self):
             return corner-12.0
-        
+
         def end_module_bounds(self):
             return linear_extrude(height)(
                 intersection()(
@@ -51,6 +52,9 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
                         square([2*radius, radius-corner+3])) +
                      translate([-radius+arch_width+t, self.end_module_back()])(
                          square([2*(radius-arch_width-t), radius - self.end_module_back()])))))
+
+        def end_modules_bounds(self):
+            return self.end_module_bounds() + mirror([0,1,0])(self.end_module_bounds())
 
         def _mount(self, fix, position):
             return translate(position)(
@@ -73,6 +77,7 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
                     circle(r=radius),
                     translate([radius - arch_width - t, -(corner-3.0)])(square([arch_width+t, 2*(corner-3)]))))
 
+
         def side_module_template(self):
             screw_head_r = M3.thread*1.1
             fix = hole()(
@@ -88,6 +93,9 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
                 self.side_module_bounds(),
                 self.body() + self.side_module_template())
 
+        def sides(self):
+            return self.side_module_blank() + mirror([1, 0, 0])(self.side_module_blank())
+
         def end_module_blank(self):
             return intersection()(
                 self.end_module_bounds(),
@@ -98,11 +106,11 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
 
 if __name__ == '__main__':
     util.save('body', body().body())    
-    util.save('body-end-module-bounds', body().end_module_bounds())   
+    util.save('body-end-module-bounds', body().end_module_bounds())
     util.save('body-side-module-bounds', body().side_module_bounds())
     util.save('body-module-bounds',
               color(Green)(body().side_module_bounds() + mirror([1,0,0])(body().side_module_bounds())) +
-              color(Yellow)(body().end_module_bounds() + mirror([0,1,0])(body().end_module_bounds())))
+              color(Yellow)(body().end_modules_bounds()))
     util.save('body-end-module-template', body().end_module_template())
     util.save('body-module-template',
               color(Green)(body().side_module_template() + mirror([1,0,0])(body().side_module_template())) +

@@ -16,7 +16,6 @@ def inch_to_mm(in_inches):
     else:
         return [ inch_to_mm(x) for x in i ]
 
-
 def radial(r, angles, x):
     return union()(*( rotate(a)(forward(r)(x)) for a in angles))
 
@@ -31,6 +30,26 @@ def origin(origin):
 def corners(x, y, center=True):
     return (center and ([-x/2, y/2], [x/2, y/2], [x/2, -y/2], [-x/2, -y/2]) or
             ([x,0], [x,y], [0,y], [0,0]))
+
+class Corner:
+    def __init_(self, x = 0, y = 0):
+        self.mirror = mirror
+    def _side(self, x):
+        return Corner(x=x, y=self.y)
+    def left(self):
+        return _side(1)
+    def right(self):
+        return _side(0)
+    def _end(self, y):
+        return Corner(self.x, y)
+    def front(self):
+        return _end(0)
+    def back(self):
+        return _end(1)
+
+    def mirror(self):
+        return mirror([x,y,0])
+
 
 def tube(h, r = None, ir = None, t = None, center=False):
     r = r or (ir + t)

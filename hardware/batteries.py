@@ -180,7 +180,7 @@ class PanelHolder:
             self.panel(0) +
             self._cover_hooks(hook_width) +
             hole()(linear_extrude(height=self.wall_thickness)(offset(delta=0.5)(self._screw_cover_outline(fixing)))))
-    
+
     def screw_cover(self, fixing=M3, hook_width=7.0):
         t = self.wall_thickness
         hook = up(t)(linear_extrude(height=t)(square([2*t, hook_width-1.0], center=True)))
@@ -190,4 +190,3 @@ class PanelHolder:
                 hole()(union()(*(translate(p)(fixing.cut()) for p in self._screw_positions(fixing)))) -
                 right(self.cell_offsets[-1] + self.cell_diameter/2)(circle(d=10.0))) +
             union()(*(translate(p)(hook) for p in self._hook_positions(hook_width))))
-    

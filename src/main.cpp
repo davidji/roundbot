@@ -9,7 +9,8 @@
 #include "mbed.h"
 #include "motor.h"
 #include "differential.h"
-#include "hc-sr04.h"
+#include "VL53L0X.h"
+#include "APDS9960.h"
 #include "wiring.h"
 
 const float pi = 3.1415927;
@@ -31,7 +32,11 @@ DifferentialDrive differential(Wheel(leftMotor, leftEncoder, stepLength), Wheel(
 
 Timer testTimer;
 DigitalOut led1(LED1);
-HC_SR04 range(distance_trig, distance_echo);
+I2C i2c(D14, D15);
+Timer rangeTimer;
+VL53L0X range(&i2c, &rangeTimer);
+APDS9960 gesture(i2c);
+
 
 void drive(float left, float right) {
     leftMotor.drive(left);
@@ -160,7 +165,7 @@ void shell() {
             break;
         case 1:
             if(strcmp("range", command) == 0) {
-                console.printf("range %dmm\n", mm(range.read()));
+                console.printf("range %dmm\n", range.readRangeContinuousMillimeters());
             } else if(strcmp("progress", command) == 0) {
                 console.printf("progress left=%dmm, right=%dmm\n",
                         mm(differential.left.peek()), mm(differential.right.peek()));
@@ -188,7 +193,11 @@ void shell() {
 int main() {
     console.baud(38400);
     console.printf("roundbot\n");
-    range.start();
+    i2c.frequency(400000);
+    i2c.start();
+    range.init();
+    range.startContinuous();
+
     led1 = true;
 
     // encoder_test();
