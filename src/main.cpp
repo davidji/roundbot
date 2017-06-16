@@ -10,7 +10,7 @@
 #include "motor.h"
 #include "differential.h"
 #include "VL53L0X.h"
-#include "APDS9960.h"
+
 #include "wiring.h"
 
 const float pi = 3.1415927;
@@ -35,7 +35,7 @@ DigitalOut led1(LED1);
 I2C i2c(D14, D15);
 Timer rangeTimer;
 VL53L0X range(&i2c, &rangeTimer);
-APDS9960 gesture(i2c);
+// APDS9960 gesture(i2c);
 
 
 void drive(float left, float right) {
