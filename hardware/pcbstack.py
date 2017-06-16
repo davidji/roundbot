@@ -9,7 +9,7 @@ end I need some support.
 
 from solid import *
 from solid.utils import *
-import util, body, eyes
+import util, body, eyes, chassis
 from util import radial, pipe, ABIT
 from fixings import M3
 
@@ -66,8 +66,14 @@ def stackbody(layers):
              square([70, 2], center=True)))
            for y in (stack_h/2-1, -stack_h/2+1)])))
 
+def chassisplate(layers):
+    stackchassis = chassis.chassis()
+    stack_h = SPACING*(layers-1)+8.0
+    return stackchassis.pcb_plate_blank() + translate([0, stack_h/2, 17.0])(rotate([90, 0, 0])(stack(layers)))
+
 if __name__ == '__main__':
-    util.save('pcbstack-spacer', spacer())    
+    util.save('pcbstack-spacer', spacer())
     util.save('pcbstack', stack(4))
     util.save('pcbstack-body-sides', stackbodysides(4))
     util.save('pcbstack-body', stackbody(3))
+    util.save('pcbstack-chassis-plate', chassisplate(4))

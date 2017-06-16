@@ -28,7 +28,7 @@ def origin(origin):
     return dotranslate
 
 def corners(x, y, center=True):
-    return (center and ([-x/2, y/2], [x/2, y/2], [x/2, -y/2], [-x/2, -y/2]) or
+    return (center and ([x/2, y/2], [x/2, -y/2], [-x/2, -y/2], [-x/2, y/2]) or
             ([x,0], [x,y], [0,y], [0,0]))
 
 class Corner:

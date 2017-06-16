@@ -29,7 +29,7 @@ def body(height=21.0, radius=50.0, insert_height=3.0, t=2.0, arch_width=12.0):
             return radius
 
         def pillars(self):
-            return radial(radius - 3, [+45, -45, +135, -135], pillar)
+            return radial(radius - 3, [+60, -60, +120, -120], pillar)
 
         def shell(self):
             return (rotate_extrude()(body_cross_section()) +
