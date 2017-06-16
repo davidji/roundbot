@@ -47,6 +47,14 @@ class MetricThread(AnyThread):
         self.nut = MetricNut(thread)
 
 
+def snapin(d1, d2, t, h1, h2):
+    return (
+        cylinder(d=d2, h=h1) +
+        up(h1)(cylinder(d=d1, h=t)) +
+        up(h1+t)(cylinder(d1=d1, d2=d2, h=h2/2)) +
+        up(h1+t+h2/2)(cylinder(d1=d2, d2=d1)) +
+        hole()(linear_extrude(h1+t+h2)(square([d2, d1/2], center=True))))
+
 M1_6 = MetricThread(1.6, 1.25)
 # M2 - the insert size is meant to be 3.6 but I'm finding that 
 # a bit loose, so I've set it at 3.5 for now
