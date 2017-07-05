@@ -22,6 +22,9 @@ import feather
 from body import body as makebody
 from eyes import eyes
 import util
+from gtk.keysyms import cent
+from PIL.GimpGradientFile import linear
+from solid.objects import linear_extrude
 
 CELL_DIAMETER = 17.0
 CELL_LENGTH = 34.5
@@ -91,33 +94,53 @@ def chassis(body=None,
     def pen_hole():
         return circle(5, True)
 
+    def qtr_mount(d, screws, sensors):
+        return (linear_extrude(base_thickness)(square([x + 2.0 for x in d[0:2]], center=True)) +
+                up(1.0)(linear_extrude(d[2])(hole()(
+                    difference()(
+                        square(d[0:2], center=True),
+                        union()(*(translate(p)(circle(r=2.0)) for p in screws)))))) +
+                union()(*(translate(p)(pipe(ir=1.0, r=2.0, h=base_thickness + d[2] - 1.0))
+                          for p in screws)) +
+                union()(*(translate(p)(hole()(linear_extrude(base_thickness)(square([3.0,5.0], center=True))))
+                          for p in sensors)) +
+                hole()(up(base_thickness + d[2] - 1.0)(linear_extrude(10.0)(square(d[0:2], center=True)))))
+
     def pololu_qtr_3a_mount():
-        screw_mount = (pipe(ir=1.0, t=min_wall, h=base_thickness+2.0) + 
-                       hole()(up(base_thickness)(M2.nut.capture(2.0))))
-        spacing=inch_to_mm(1.05)
-        cable_outline = square([1.1*inch_to_mm(0.5), 1.1*inch_to_mm(0.1)], True)
-        cable_slot = linear_extrude(height=base_thickness)(
-            offset(min_wall)(cable_outline) + hole()(cable_outline))
+        d = [32.0, 8.0, 3.0]
+        sensors = ([-9.6, 0.0], [0.0, 0.0], [9.6, 0.0])
+        screw_spacing=inch_to_mm(1.05)
         QTR_3A_FORWARD = CASTER_FORWARD + caster.d[1] + inch_to_mm(0.3)/2
         return forward(QTR_3A_FORWARD)(
-            rotate([0,0,180])(
-                back(inch_to_mm(0.10))(cable_slot) +
-                left(spacing/2)(screw_mount) +
-                right(spacing/2)(screw_mount)))
+            qtr_mount(d, ([-screw_spacing/2, 0], [screw_spacing/2, 0]), sensors))
+
+    def pololu_qtr_1a_mounts():
+        d = [inch_to_mm(0.3), inch_to_mm(0.5), 3.0]
+        qtr_1a = qtr_mount(d, [[0, -4.0]], [[0, 1.35]])
+        return radial(radius - inch_to_mm(0.5)/2 - 2.0, [+30, -30], qtr_1a)
+
+    def neopixels():
+        return radial(radius-4, [ -150, 150, -165, 165, -180 ],
+            up(body.height()/2)(rotate([-90,0,0])(
+                hole()(
+                    cylinder(d=5.0,h=5.0) + 
+                    linear_extrude(3.0)(square([5.5, 5.5], center=True))) +
+                cylinder(d=12, h=5.0) +
+                translate([-6, 0])(cube([12,body.height()/2, 5.0])) -
+                linear_extrude(2.2)(
+                    intersection()(
+                        circle(d=10.5), 
+                        square([11.0,8.5], center=True))))))
 
     def wheels():
         rwheel = up(5)(right(radius-arch_width+5)(rotate([0,90,0])(cylinder(r=16,h=7,center=True))))
         lwheel = mirror([1,0,0])(rwheel)
         return rwheel + lwheel
 
-    def connecting_screw_holes():
-        return hole()(radial(radius - 3, [+45, -45, +135, -135], M3.cut()))
-
     def base():
         return (intersection()(
             (circle(radius-3) -
-             radial(0, [0,180], wheel_arch()) -
-             connecting_screw_holes()),
+             radial(0, [0,180], wheel_arch())),
              honeycomb(1.5, 1.0, 100.0, 100.0, center=True) +
              square([2*radius, 2*CR123A_FORWARD + battery_holder.d[0]], center=True) -
              pen_hole()))
@@ -153,7 +176,10 @@ def chassis(body=None,
                 union()(*(translate(p)(insert_pillar(fixing=M2)) for p in raspberrypi.zero.holes)))
 
     def pcb_plate_fixings(fixing):
-        return radial(radius - 5.5, [+30, -30, +150, -150], fixing)
+        return union()(*(
+            translate(p)(fixing) 
+            for p in corners(2*(radius - arch_width - min_wall - M2.thread), 2*CR123A_FORWARD) +
+            corners(25,50)))
 
     def pcb_support_pillars():
         return pcb_plate_fixings(insert_pillar(pcb_plate_height, fixing=M2))
@@ -165,11 +191,10 @@ def chassis(body=None,
                 rotate([90,0,0])(linear_extrude(2*radius, center=True)(
                     triangle(min_wall))))
         return up(pcb_plate_height)(
-            rotate_extrude()(translate([radius,0])(triangle(3.0+min_wall))) +
             side + mirror([1,0,0])(side))
 
     def battery_holders():
-        return rotate([0,0,90])(battery_holder.back() + battery_holder.screw_cover_mount())
+        return rotate([0,0,-90])(battery_holder.back() + battery_holder.screw_cover_mount())
 
     def caster_holder():
         return (linear_extrude(height=base_thickness*2+M2.nut.h)(offset(r=2)(caster.outline())) +
@@ -219,15 +244,21 @@ def chassis(body=None,
             cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
             cube([10, min_wall, battery_holder.d[2]], center=True))
 
+        castor_brace=translate([0,CR123A_FORWARD,battery_holder.d[2]/2])(rotate([-45.0, 0, 0])(
+            forward(15.0)(cube([min_wall, 30.0, battery_holder.d[2]], center=True))))
+
         return intersection()(
             union()(
                 left(radius - arch_width - min_wall/2.0)(wheel_wall),
                 right(radius - arch_width - min_wall/2.0)(wheel_wall),
+                castor_brace,
+                mirror([0,1,0])(castor_brace),
                 left(6.0)(battery_wall),
                 right(6.0)(battery_wall),
                 forward(7.0+min_wall/2)(cross_wall),
                 back(7.0+min_wall/2)(cross_wall)),
             up(base_thickness)(cylinder(r=radius-1, h=body.height()-base_thickness)))
+
 
     def frontmost(d, r=radius - 3.0):
         y = sqrt(pow(r, 2.0)-pow(d[0]/2, 2.0)) - d[1]/2
@@ -235,30 +266,87 @@ def chassis(body=None,
             
     def feather_mount():
         base_height = base_thickness*2+M2.nut.h-2.0
-        return mirror([0,1,0])(
-                frontmost([feather.board.d[0], 10.0], r=radius)(
+        return rotate([0,0,180])(frontmost([feather.board.d[0], 10.0], r=radius)(
                     up(base_height)(
                         feather.board.slot_screw_mount()) +
                     linear_extrude(base_height)(
                         square([feather.board.d[0] + 2.0, 30.0], center=True) -
                         square([feather.board.d[0] - 12.0, 30.0], center=True))))
 
+    def headlights():
+        block = forward(6.0)(linear_extrude(body.height())(square([8,12], center=True)))
+        return frontmost([70.0,0])(
+            union()(*(translate([x, 0.0, body.height()/2 + z])(
+                rotate([-90, 0, 0])(
+                    pipe(ir=2.5, r=4.0, h=4.0) +
+                    up(4.0)(cylinder(d1=8.0, d2=13.0, h=8.0) + 
+                            hole()(cylinder(d1=5.0, d2=13.0, h=8.0)))))
+                for (x,z) in corners(65, 12))) +
+                left(65.0/2)(block) + right(65.0/2)(block))
+
     class Chassis:
         def radius(self):
             return radius
         
+        def _base_sensors(self):
+            return (pololu_qtr_3a_mount() +
+                    pololu_qtr_1a_mounts())
+        
+        def _no_base_sensors(self):
+            return (
+                linear_extrude(height=base_thickness)(base()) +
+                battery_holders() +
+                reinforcement() +
+                casters() +
+                wheel_arches() +
+                motors_mounts() +
+                motor_connector_slots() +
+                headlights() +
+                pcb_support_pillars() +
+                neopixels())
+
+        def _unbounded_chassis(self):
+            return (linear_extrude(height=base_thickness)(base()) +
+                battery_holders() +
+                reinforcement() +
+                casters() +
+                wheel_arches() +
+                motors_mounts() +
+                motor_connector_slots() +
+                headlights() +
+                pcb_support_pillars() +
+                neopixels() +
+                pololu_qtr_3a_mount() +
+                pololu_qtr_1a_mounts())
+        
         def chassis(self):
             return intersection()(
                 cylinder(r=radius, h=body.height()),
-                (linear_extrude(height=base_thickness)(base()) +
-                 battery_holders() +
-                 reinforcement() +
-                 casters() +
-                 wheel_arches() +
-                 motors_mounts() +
-                 motor_connector_slots() +
-                 feather_mount() +
-                 pololu_qtr_3a_mount()))
+                self._no_base_sensors() +
+                self._base_sensors() + body.body())
+
+        def _base_connectors(self):
+            def connector(height):
+                return (pipe(r=3.0, ir=1.1, h=height) +
+                        up(height-M2.nut.h)(hole()(rotate([0,0,90])(M2.nut.capture(h=M2.nut.h*2)))))
+
+            return (radial(radius-5.0, [+37.5, -37.5], connector(12.0)) +
+                    radial(radius-5.0, [+142.5, -142.5], connector(8.0)))
+
+        def base(self):
+            return (intersection()(
+                    cylinder(r=radius, h=base_thickness),
+                    self._no_base_sensors() +
+                    self._base_connectors() + 
+                    body.body()) + self._base_sensors())
+
+        def upper(self):
+            return intersection()(
+                up(base_thickness)(cylinder(r=radius, h = body.height() - base_thickness)),
+                self._no_base_sensors() +
+                self._base_sensors() +
+                self._base_connectors() +
+                body.body())
 
         def fullbody(self):
             return (self.chassis() + body.body())
@@ -303,6 +391,8 @@ def chassis(body=None,
 
 def export_scad():
     util.save('chassis', chassis().fullbody())
+    util.save('chassis-base', chassis().base())
+    util.save('chassis-upper', chassis().upper())
     util.save('chassis-pcb-plate', chassis().pcb_plate())
     util.save('chassis-modular', chassis().modularbody())
     util.save('chassis-battery-cover', battery_holder.screw_cover())

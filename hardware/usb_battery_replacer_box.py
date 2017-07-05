@@ -13,26 +13,21 @@ and terminal screws.
 
 """
 
-class usb:
-    """3mm holes, 8mm back, 9mm apart"""
-    d = [13.3,15.9,5.0]
-    holes = ([-4.5, -7.5], [4.5, -7.5])
-    
 class converter:
     """3mm holes 30x46mm"""
     d = [38.0,53.2,14.0]
     dholes = [30, 46]
 
 wall_thickness=2.0
-usb_offset = converter.d[1]/2 + 2 + usb.d[1]
+usb_offset = converter.d[1]/2 + 2 + usb.breakout.d[1]
 side_gap = 2.0
 width = converter.d[0] + 2*side_gap
-depth = converter.d[1] + usb.d[1] + 2
+depth = converter.d[1] + usb.breakout.d[1] + 2
 
 def usb_box():
     return (boxes.builder([width, depth], 2.0, 6.6, 11)
             .screw_mounts(M3, origin([width/2, converter.d[1]/2])(*corners(*converter.dholes)))
-            .screw_mounts(M3, origin([width/2, depth])(*usb.holes))
+            .screw_mounts(M3, origin([width/2, depth])(*usb.breakout.holes))
             .lidVent([20, depth - 30])
             .hole(translate([side_gap + 5.0, 30.2])(circle(d=3)))
             .well(translate([(width-11)/2, -wall_thickness-ABIT])
@@ -45,7 +40,7 @@ def usb_box_shoe():
     # I'm leaving a bit of space around the sides to allow convection
     vent = [converter.d[0] - 12, converter.d[1]/2]
     return (
-        up(6.6)(forward((wall_thickness + usb.d[1])/2)(
+        up(6.6)(forward((wall_thickness + usb.breakout.d[1])/2)(
             usb_box().base().build(center=True))) +
         translate([-5, -(converter.d[1]/2)-wall_thickness - ABIT, id[2]])(cube([10, wall_thickness+ABIT, 12])) -
         translate([-7.5/2, usb_offset, id[2]])(cube([7.5, wall_thickness+ABIT, 3])) -
@@ -59,7 +54,7 @@ def usb_port():
 
 def usb_box_top():
     id = [width, depth, 11]
-    return (forward((wall_thickness + usb.d[1])/2) (
+    return (forward((wall_thickness + usb.breakout.d[1])/2) (
                 usb_box().lid().build(center=True)))
 
 def export_scad():

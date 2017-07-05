@@ -2,7 +2,7 @@
 from solid import *
 from solid.utils import *
 
-from util import inch_to_mm, pipe
+from util import inch_to_mm, pipe, tube
 from honeycomb import hexagon
 
 tolerance = 1.05
@@ -53,7 +53,9 @@ def snapin(d1, d2, t, h1, h2):
         up(h1)(cylinder(d=d1, h=t)) +
         up(h1+t)(cylinder(d1=d1, d2=d2, h=h2/2)) +
         up(h1+t+h2/2)(cylinder(d1=d2, d2=d1)) +
-        hole()(linear_extrude(h1+t+h2)(square([d2, d1/2], center=True))))
+        hole()(linear_extrude(h1+t+h2)(square([d2, d1/2], center=True)) +
+               (tube(ir=d2/2.0, t=1.0, h=h1) - 
+                linear_extrude(1.0)(square([d2/2, d2+2.0], center=True)))))
 
 M1_6 = MetricThread(1.6, 1.25)
 # M2 - the insert size is meant to be 3.6 but I'm finding that 

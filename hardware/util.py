@@ -27,9 +27,12 @@ def origin(origin):
         return [ vadd(origin, point) for point in points ]
     return dotranslate
 
-def corners(x, y, center=True):
-    return (center and ([x/2, y/2], [x/2, -y/2], [-x/2, -y/2], [-x/2, y/2]) or
-            ([x,0], [x,y], [0,y], [0,0]))
+def corners(x, y, z = None, center=True):
+    if z:
+        return ((x1, y1, z1) for z1 in (center and (z/2, -z/2) or (0, z)) for (x1, y1) in corners(x,y,center=center))
+    else:
+        return (center and ([x/2, y/2], [x/2, -y/2], [-x/2, -y/2], [-x/2, y/2]) or
+                ([x,0], [x,y], [0,y], [0,0]))
 
 class Corner:
     def __init_(self, x = 0, y = 0):

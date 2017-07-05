@@ -32,7 +32,7 @@ DifferentialDrive differential(Wheel(leftMotor, leftEncoder, stepLength), Wheel(
 
 Timer testTimer;
 DigitalOut led1(LED1);
-I2C i2c(D14, D15);
+I2C i2c(D4, D5);
 Timer rangeTimer;
 VL53L0X range(&i2c, &rangeTimer);
 // APDS9960 gesture(i2c);

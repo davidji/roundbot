@@ -22,7 +22,7 @@ class zero:
     
     @staticmethod
     def outline():
-        return hull()(*(translate(p)(circle(r=3.6)) for p in zero.holes))
+        return hull()(*(translate(p)(circle(r=3.7)) for p in zero.holes))
 
     @staticmethod
     def shoe(h=2.0):
@@ -41,16 +41,20 @@ class zero:
         return (
             linear_extrude(t+h+1.6)(offset(r=1.0)(zero.outline())) -
             up(t)(linear_extrude(h+1.6+ABIT)(zero.outline())) +
-            union()(*(translate(p)(pipe(ir=1.25, r=2.5, h=t+h)) for p in zero.holes)))
+            union()(*(translate(p)(pipe(ir=1.3, r=2.5, h=t+h)) for p in zero.holes)))
     
     @staticmethod
     def wifi_cover():
         holes = corners(34.85, 12.4)[0::2]
-        clip = fixings.snapin(d1=2.8, d2=3.6, h1=5.0, h2=2.0, t=1.0)
-        offset = zero.d[0]/2-20
-        return (zero.cover(h=6.0) +
+        clip = fixings.snapin(d1=2.8, d2=3.6, h1=4.0, h2=2.0, t=1.0)
+        offset = zero.d[0]/2 - 20 - 8
+        return (zero.cover(t=1.0, h=6.0) +
                 right(offset)(union()(*(translate(p)(clip) for p in holes))) +
                 hole()(translate([zero.d[0]/2, -7.0, 2.0])(cube([3.0,3.0,7.6]))))
+
+    @staticmethod
+    def phat_riser():
+        spacing = 11.0
 
 if __name__ == '__main__':
     util.save('raspberrypi-zero-shoe', zero.shoe())

@@ -1,4 +1,5 @@
 
+import util
 from util import *
 from fixings import M3
 from solid.solidpython import linear_extrude
@@ -187,7 +188,6 @@ def builder(id, t, base_height, lid_height):
             
         
     return Builder(box, bounds)
-            
 
 def bottom(*args, **kwargs):
     return builder(*args, **kwargs).bottom()
@@ -195,3 +195,26 @@ def bottom(*args, **kwargs):
 def top(id, t, center=False, vent=None, lip=None, connector=None, holes=None, wells=None):
     box = bottom(id, t, center, vent, lip, connector, True)
     return box
+
+def roundcube(d, r):
+    w, d, h = d
+    
+    def roundsquare(w, d, h, rt):
+        return rotate(rt)(linear_extrude(h, center=True)(hull()(*(translate(p)(circle(r=r)) for p in corners(w,d)))))
+    
+    return (union()(*(translate(p)(sphere(r=r)) for p in corners(w,d,h))) +
+            roundsquare(w, d, h, [0, 0, 0]) +
+            roundsquare(h, d, w, [0, 90, 0]) +
+            roundsquare(w, h, d, [90, 0, 0]))
+
+def roundbox(d, r, t):
+    return roundcube(d, r) - roundcube(d, r-t)
+
+def export_scad():
+    util.save('roundcube', roundcube([30.0,20.0,10.0], 3))
+    util.save('roundbox', intersection()(
+        linear_extrude(13.0)(square([36.0, 26.0], center=True)),
+        roundbox([30.0,20.0,10.0], 3, 2)))
+
+if __name__ == '__main__':
+    export_scad()
