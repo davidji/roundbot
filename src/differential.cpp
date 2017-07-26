@@ -50,7 +50,7 @@ void DifferentialDrive::turn(float radians) {
     turningController.setSetPoint(radians);
     turningController.setInputLimits(radians-pi, radians+pi);
     turningController.reset();
-    ticker.attach_us(this, &DifferentialDrive::turningTick, pid_period_us);
+    ticker.attach_us(callback(this, &DifferentialDrive::turningTick), pid_period_us);
 }
 
 void DifferentialDrive::turningTick() {
@@ -99,5 +99,5 @@ void DifferentialDrive::move(float meters) {
     movingController.setSetPoint(meters);
     movingController.setInputLimits(meters-0.1, meters+0.1);
     movingController.reset();
-    ticker.attach_us(this, &DifferentialDrive::movingTick, pid_period_us);
+    ticker.attach_us(callback(this, &DifferentialDrive::movingTick), pid_period_us);
 }
