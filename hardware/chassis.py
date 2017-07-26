@@ -210,8 +210,17 @@ def chassis(body=None,
     def hc_sr04_mount():
         return translate([0, radius, 15])(rotate([90,0,0])(radial(18, [-90,90], pipe(r=10,t=2,h=8))))
 
+    def motor_positions(a):
+        return radial(radius-arch_width, [90, -90], rotate([0, 0, 180])(a))
+
     def motors_mounts():
-        return radial(radius-arch_width, [90, -90], rotate([0, 0, 180])(micrometal.shoe()))
+        return motor_positions(micrometal.shoe())
+
+    def motors_cover_voids():
+        return motor_positions(micrometal.motor_cover_void())
+
+    def motors_screw_holes():
+        return motor_positions(hole()(micrometal.cover_screws(base_thickness)))
 
     def motor_connector_slots():
         """The motors have an jst-ph connector on top of them. It's 14x8x5mm
@@ -244,15 +253,16 @@ def chassis(body=None,
             cube([2*(radius-arch_width), min_wall, cross_wall_h], center=True) -
             cube([10, min_wall, battery_holder.d[2]], center=True))
 
-        castor_brace=translate([0,CR123A_FORWARD,battery_holder.d[2]/2])(rotate([-45.0, 0, 0])(
-            forward(15.0)(cube([min_wall, 30.0, battery_holder.d[2]], center=True))))
+        castor_brace=translate([0,CR123A_FORWARD,battery_holder.d[2]/2])(rotate([-50.0, 0, 0])(
+            forward(7.5)(cube([min_wall, 15.0, battery_holder.d[2]], center=True))))
+        castor_braces=left(10.0)(castor_brace) + right(10.0)(castor_brace)
 
         return intersection()(
             union()(
                 left(radius - arch_width - min_wall/2.0)(wheel_wall),
                 right(radius - arch_width - min_wall/2.0)(wheel_wall),
-                castor_brace,
-                mirror([0,1,0])(castor_brace),
+                castor_braces,
+                mirror([0,1,0])(castor_braces),
                 left(6.0)(battery_wall),
                 right(6.0)(battery_wall),
                 forward(7.0+min_wall/2)(cross_wall),
@@ -294,7 +304,6 @@ def chassis(body=None,
         
         def _no_base_sensors(self):
             return (
-                linear_extrude(height=base_thickness)(base()) +
                 battery_holders() +
                 reinforcement() +
                 casters() +
@@ -305,23 +314,10 @@ def chassis(body=None,
                 pcb_support_pillars() +
                 neopixels())
 
-        def _unbounded_chassis(self):
-            return (linear_extrude(height=base_thickness)(base()) +
-                battery_holders() +
-                reinforcement() +
-                casters() +
-                wheel_arches() +
-                motors_mounts() +
-                motor_connector_slots() +
-                headlights() +
-                pcb_support_pillars() +
-                neopixels() +
-                pololu_qtr_3a_mount() +
-                pololu_qtr_1a_mounts())
-        
         def chassis(self):
             return intersection()(
                 cylinder(r=radius, h=body.height()),
+                linear_extrude(height=base_thickness)(base()) +
                 self._no_base_sensors() +
                 self._base_sensors() + body.body())
 
@@ -336,8 +332,10 @@ def chassis(body=None,
         def base(self):
             return (intersection()(
                     cylinder(r=radius, h=base_thickness),
+                    linear_extrude(height=base_thickness)(base()) +
                     self._no_base_sensors() +
                     self._base_connectors() + 
+                    motors_screw_holes() +
                     body.body()) + self._base_sensors())
 
         def upper(self):

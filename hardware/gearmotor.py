@@ -100,11 +100,10 @@ class micrometal:
         return (rotate([0,0,180])(
             translate([-od[0]/2, -od[1], wall_thickness])(
                 base() +
-                cube(od) +
+                cube(od) +    
                 hole()(gearbox_void()) +
                 hole()(motor_void()))) +
-            micrometal.cover_void(wall_thickness))
-
+            hole()(micrometal.cover_screws(wall_thickness)))
 if __name__ == '__main__':
     util.save('micrometal-shoe', micrometal.shoe())
     util.save('micrometal-cover', micrometal.cover())
