@@ -11,7 +11,26 @@
 #include "differential.h"
 #include "VL53L0X.h"
 
+#include "Spki.h"
+#include "CanonicalInput.h"
+#include "FloatPair.h"
+#include "Tag.h"
+#include "TagDispatcher.h"
+#include "SlipInput.h"
+#include "SlipOutput.h"
+#include "MBedStreamWrapper.h"
+
 #include "wiring.h"
+
+using namespace sexps;
+using namespace slip;
+using namespace motor;
+
+Serial serial(SERIAL_TX, SERIAL_RX, 115200);
+MBedStreamWrapper serialwrapper(serial);
+SlipInput requests(serialwrapper);
+SlipOutput responses(serialwrapper);
+
 
 const float pi = 3.1415927;
 const float gearMotorRatio = 50.0;
@@ -23,10 +42,10 @@ const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
 Serial console(serial_tx_pin, serial_rx_pin);
 
 // Break/drive mode gives nice linear response, but the first 10% produces little to no movement.
-motor::MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin, BRAKE, 0.1, 1.0);
-motor::MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin, BRAKE, 0.1, 1.0);
-motor::MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
-motor::MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
+MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin, BRAKE, 0.1, 1.0);
+MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin, BRAKE, 0.1, 1.0);
+MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
+MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
 
 DifferentialDrive differential(Wheel(leftMotor, leftEncoder, stepLength), Wheel(rightMotor, rightEncoder, stepLength), wheelBase);
 
@@ -47,17 +66,24 @@ int percent(float f) {
     return f * 100.0f;
 }
 
-void print_encoder_info() {
-    console.printf("min(l1): %02d max(l1): %02d min(l2): %02d max(l2): %02d "
-           "min(r1): %02d max(r1): %02d min(r2): %02d max(r2): %02d ",
-           percent(leftEncoder.in1.minimum),
-           percent(leftEncoder.in1.maximum),
-           percent(leftEncoder.in2.minimum),
-           percent(leftEncoder.in2.maximum),
-           percent(rightEncoder.in1.minimum),
-           percent(rightEncoder.in1.maximum),
-           percent(rightEncoder.in2.minimum),
-           percent(rightEncoder.in2.maximum));
+CanonicalOutput &operator<<(CanonicalOutput &out, motor::MinMax &in) {
+	out << tag("min", in.minimum);
+	out << tag("max", in.maximum);
+	return out;
+}
+
+CanonicalOutput &operator<<(CanonicalOutput &out, MotorEncoder &encoder) {
+	out << encoder.in1;
+	out << encoder.in2;
+	return out;
+}
+
+CanonicalOutput &operator<<(CanonicalOutput &out, DifferentialDrive &d) {
+	float left = d.left.peek();
+	float right = d.right.peek();
+	out << tag("left", left);
+	out << tag("right", right);
+	return out;
 }
 
 void motorsTestStep(float left, float right) {
@@ -67,20 +93,25 @@ void motorsTestStep(float left, float right) {
     drive(left, right);
     wait_ms(1000);
     led1 = ~led1;
-    long left_rotation = differential.left.read()*1000;
-    long right_rotation = differential.right.read()*1000;
-    long s = testTimer.read_ms();
-    console.printf("duty: %+04d, %+04d distance: %+06ld, %+06ld rate: %+06ld, %+06ld\n",
-            percent(left),
-            percent(right),
-            left_rotation,
-            right_rotation,
-            left_rotation/s,
-            right_rotation/s);
+    float left_rotation = differential.left.read();
+    float right_rotation = differential.right.read();
+    float s = testTimer.read();
+
+    responses.begin();
+    CanonicalOutput out(responses);
+    out << '(' << "test";
+    out << '(' << "parameters";
+    out << tag("left", left);
+    out << tag("right", right);
+    out << ')';
+    out << tag("left", left_rotation);
+    out << tag("right", right_rotation);
+    out << tag("time", s);
+    out << ')';
+    responses.end();
 }
 
 void motorsTest(float speed) {
-    console.printf("motors test %f\n", speed);
     testTimer.start();
     leftEncoder.start();
     rightEncoder.start();
@@ -130,69 +161,87 @@ int mm(float m) {
     return m*1000;
 }
 
-void shell() {
-    char buffer[40];
-    char command[20];
-    char arg[20];
+class Shell {
+	bool invalid() {
+		return false;
+	}
 
-    differential.start();
-    while(true) {
-        console.printf("ready\n");
-        int i = 0;
-        char c = console.getc();
-        for(i = 0; i != sizeof(buffer) && c != '\n'; ++i) {
-            buffer[i] = c;
-            c = console.getc();
-        }
-        buffer[i] = '\0';
+	bool move(FloatPair &value) {
+		differential.move(value);
+		return true;
+	}
 
-        int tokens = sscanf(buffer, " %20s %20s", command, arg);
-        switch (tokens) {
-        case 2: {
-                float value = strtof(arg, NULL);
-                if(value == 0.0) {
-                    console.printf("error: could not parse argument as floating point %s\n", arg);
-                } else if(strcmp("move", command) == 0) {
-                    console.printf("move %dmm\n", mm(value));
-                    differential.move(value);
-                } else if(strcmp("turn", command) == 0) {
-                    console.printf("turn %d\n", mm(value));
-                    differential.turn(value);
-                } else {
-                    console.printf("error: unknown command %s\n", command);
-                }
-            }
-            break;
-        case 1:
-            if(strcmp("range", command) == 0) {
-                console.printf("range %dmm\n", range.readRangeContinuousMillimeters());
-            } else if(strcmp("progress", command) == 0) {
-                console.printf("progress left=%dmm, right=%dmm\n",
-                        mm(differential.left.peek()), mm(differential.right.peek()));
-            } else if(strcmp("test", command) == 0) {
-                console.printf("test\n");
-                motorsTestSpeeds();
-            } else if(strcmp("calibrate", command) == 0) {
-                testTimer.start();
-                for(float duty = 0; duty <= 1.0; duty = duty + 0.01) {
-                    motorsTestStep(duty, duty);
-                }
-                console.printf("encoders: ");
-                print_encoder_info();
-                console.printf("\n");
-            } else {
-                console.printf("error: unknown command %s\n", command);
-            }
-            break;
-        default:
-            console.printf("error: malformed command: %s\n", buffer);
+	bool turn(FloatPair &value) {
+		differential.turn(value);
+		return true;
+	}
+
+	bool status() {
+        responses.begin();
+		CanonicalOutput out(responses);
+		out << tag("progress", differential);
+		responses.end();
+        return true;
+	}
+
+	bool test() {
+        motorsTestSpeeds();
+        return true;
+	}
+
+	bool calibrate() {
+        testTimer.start();
+        for(float duty = 0; duty <= 1.0; duty = duty + 0.01) {
+            motorsTestStep(duty, duty);
         }
-    }
-}
+
+        responses.begin();
+		CanonicalOutput out(responses);
+    	out << '(' << "encoders";
+    	out << leftEncoder;
+    	out << rightEncoder;
+    	out << ')';
+    	responses.end();
+
+        return true;
+	}
+
+	static constexpr auto dispatch = dispatcher(
+			&Shell::invalid,
+			tag("move", &Shell::move),
+			tag("turn", &Shell::turn),
+			tag("status", &Shell::status),
+			tag("test", &Shell::test),
+			tag("calibrate", &Shell::calibrate));
+
+public:
+	void main() {
+		while(true) {
+			CanonicalInput in(requests);
+			bool result = dispatch.apply(*this, in);
+			requests.next();
+			responses.begin();
+			CanonicalOutput encoder(responses);
+			if (result) {
+				int frames = requests.frames();
+				encoder << tag("ok", frames);
+			} else {
+				if(in) {
+					encoder << tag("error");
+				} else {
+					const char* message = in.message();
+					encoder << tag("error", message);
+				}
+			}
+			responses.end();
+		}
+	}
+};
+
+Shell shell;
 
 int main() {
     console.baud(38400);
-    console.printf("roundbot\n");
     i2c.frequency(400000);
     i2c.start();
     range.init();
@@ -200,7 +249,5 @@ int main() {
 
     led1 = true;
 
-    // encoder_test();
-    // differential_test();
-    shell();
+    shell.main();
 }
