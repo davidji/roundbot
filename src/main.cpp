@@ -162,6 +162,9 @@ int mm(float m) {
 }
 
 class Shell {
+
+public:
+
 	bool invalid() {
 		return false;
 	}
@@ -206,39 +209,40 @@ class Shell {
         return true;
 	}
 
-	static constexpr auto dispatch = dispatcher(
-			&Shell::invalid,
-			tag("move", &Shell::move),
-			tag("turn", &Shell::turn),
-			tag("status", &Shell::status),
-			tag("test", &Shell::test),
-			tag("calibrate", &Shell::calibrate));
 
-public:
-	void main() {
-		while(true) {
-			CanonicalInput in(requests);
-			bool result = dispatch.apply(*this, in);
-			requests.next();
-			responses.begin();
-			CanonicalOutput encoder(responses);
-			if (result) {
-				int frames = requests.frames();
-				encoder << tag("ok", frames);
-			} else {
-				if(in) {
-					encoder << tag("error");
-				} else {
-					const char* message = in.message();
-					encoder << tag("error", message);
-				}
-			}
-			responses.end();
-		}
-	}
 };
 
-Shell shell;
+const auto dispatch = dispatcher(
+		&Shell::invalid,
+		tag("move", &Shell::move),
+		tag("turn", &Shell::turn),
+		tag("status", &Shell::status),
+		tag("test", &Shell::test),
+		tag("calibrate", &Shell::calibrate));
+
+Shell commands;
+
+void shell() {
+	while(true) {
+		CanonicalInput in(requests);
+		bool result = dispatch.apply(commands, in);
+		requests.next();
+		responses.begin();
+		CanonicalOutput encoder(responses);
+		if (result) {
+			int frames = requests.frames();
+			encoder << tag("ok", frames);
+		} else {
+			if(in) {
+				encoder << tag("error");
+			} else {
+				const char* message = in.message();
+				encoder << tag("error", message);
+			}
+		}
+		responses.end();
+	}
+}
 
 int main() {
     console.baud(38400);
@@ -249,5 +253,5 @@ int main() {
 
     led1 = true;
 
-    shell.main();
+    shell();
 }
