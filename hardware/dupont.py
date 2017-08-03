@@ -23,14 +23,28 @@ def single_in_line(n):
                    square([tenths(n)+WIRE_THICKNESS, WIRE_THICKNESS], center=True) +
                    left(tenths(float(n)/2))(square([tenths(1)+TOLERANCE, tenths(1)+TOLERANCE], center=True)))))
 
-def dual_in_line(spacing, n):
-    single = left(spacing/2)(rotate([0,0,90])(single_in_line(n)))
-    return (single + 
-            mirror([1,0,0])(single) + 
-            linear_extrude(BASE_THICKNESS)(
-                square([spacing+tenths(1)+2.0+TOLERANCE, tenths(n+1)+2.0+TOLERANCE], center=True) -
-                union()(*(translate(x)(M2.cut()) for x in util.corners(spacing-tenths(1)-6.0, tenths(n+1)-2.0)))))
-
+class DualInLine:
+    def __init__(self, spacing, n):
+        self.spacing = spacing
+        self.n = n
+        self.d = [spacing+tenths(1)+2.0+TOLERANCE, tenths(n+1)+2.0+TOLERANCE, BASE_THICKNESS+HEIGHT]
+        
+    def screw_holes(self):
+        return util.corners(self.spacing-tenths(1)-6.0, tenths(self.n+1)-2.0)
+    
+    def base(self):
+        return linear_extrude(BASE_THICKNESS)(
+                square([self.spacing+tenths(1)+2.0+TOLERANCE, tenths(self.n+1)+2.0+TOLERANCE], center=True) +
+                hole()(union()(*(translate(x)(M2.cut()) for x in self.screw_holes()))))
+    
+    def slots(self):
+        single = left(self.spacing/2)(rotate([0,0,90])(single_in_line(self.n)))
+        return (single + mirror([1,0,0])(single))
+    
+    def assembly(self):
+        single = left(self.spacing/2)(rotate([0,0,90])(single_in_line(self.n)))
+        return self.slots() + self.base()
+    
 def spacer(n):
     return (
         cube([tenths(n), BASE_THICKNESS, tenths(1)+1.0]) +
@@ -48,7 +62,7 @@ def spacer_collection():
 
 def export_scad():
     util.save('dupont-15', single_in_line(15))
-    util.save('nucleo32', dual_in_line(inch_to_mm(0.6), 15))
+    util.save('nucleo32', DualInLine(inch_to_mm(0.6), 15).assembly())
     util.save('dupont-spacers', spacer_collection())
 
 if __name__ == '__main__':

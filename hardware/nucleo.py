@@ -3,6 +3,7 @@ from solid.utils import *
 
 from fixings import M3
 from util import corners, inch_to_mm, vadd
+from dupont import DualInLine
 
 class nucleo64:
     d = [70,57.54,10]
@@ -29,3 +30,5 @@ class nucleo64:
     def cut_holes():
         return union()(*(translate(pos)(M3.cut()) for pos in nucleo64.holes))
 
+class nucleo32:
+    socket = DualInLine(inch_to_mm(0.6), 15)

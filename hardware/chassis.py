@@ -12,7 +12,7 @@ from batteries import cr123a
 from fixings import M2, M2_5, M3, NO2
 from util import *
 from raspberrypi import aplus
-from nucleo import nucleo64
+from nucleo import nucleo64, nucleo32
 from gearmotor import micrometal
 
 import batteries, raspberrypi
@@ -22,9 +22,8 @@ import feather
 from body import body as makebody
 from eyes import eyes
 import util
-from gtk.keysyms import cent
-from PIL.GimpGradientFile import linear
-from solid.objects import linear_extrude
+from mercurial.hgweb.webcommands import static
+
 
 CELL_DIAMETER = 17.0
 CELL_LENGTH = 34.5
@@ -175,14 +174,21 @@ def chassis(body=None,
         return back(radius - arch_width - raspberrypi.zero.d[1]/2)(
                 union()(*(translate(p)(insert_pillar(fixing=M2)) for p in raspberrypi.zero.holes)))
 
-    def pcb_plate_fixings(fixing):
-        return union()(*(
-            translate(p)(fixing) 
-            for p in corners(2*(radius - arch_width - min_wall - M2.thread), 2*CR123A_FORWARD) +
-            corners(25,50)))
+    def pcb_plate_fixing_positions():
+        for p in corners(2*(radius - arch_width - min_wall - M2.thread), 2*CR123A_FORWARD):
+            yield p
+        for p in corners(25,50):
+            yield p
+        
+    def pcb_plate_fixings():
+        def for_each(fixing):
+            return union()(*(
+                translate(p)(fixing) 
+                for p in pcb_plate_fixing_positions()))
+        return for_each
 
     def pcb_support_pillars():
-        return pcb_plate_fixings(insert_pillar(pcb_plate_height, fixing=M2))
+        return pcb_plate_fixings()(insert_pillar(pcb_plate_height, fixing=M2))
 
     def pcb_plate_rim():
         def triangle(d):
@@ -269,14 +275,15 @@ def chassis(body=None,
                 back(7.0+min_wall/2)(cross_wall)),
             up(base_thickness)(cylinder(r=radius-1, h=body.height()-base_thickness)))
 
+    def _fit_forward(d, r=radius - 3.0):
+        return sqrt(pow(r, 2.0)-pow(d[0]/2, 2.0)) - d[1]/2
 
-    def frontmost(d, r=radius - 3.0):
-        y = sqrt(pow(r, 2.0)-pow(d[0]/2, 2.0)) - d[1]/2
-        return translate([0,y,0])           
+    def _frontmost(d, r=radius - 3.0):
+        return translate([0,_fit_forward(d),0])           
             
     def feather_mount():
         base_height = base_thickness*2+M2.nut.h-2.0
-        return rotate([0,0,180])(frontmost([feather.board.d[0], 10.0], r=radius)(
+        return rotate([0,0,180])(_frontmost([feather.board.d[0], 10.0], r=radius)(
                     up(base_height)(
                         feather.board.slot_screw_mount()) +
                     linear_extrude(base_height)(
@@ -285,7 +292,7 @@ def chassis(body=None,
 
     def headlights():
         block = forward(6.0)(linear_extrude(body.height())(square([8,12], center=True)))
-        return frontmost([70.0,0])(
+        return _frontmost([70.0,0])(
             union()(*(translate([x, 0.0, body.height()/2 + z])(
                 rotate([-90, 0, 0])(
                     pipe(ir=2.5, r=4.0, h=4.0) +
@@ -365,18 +372,34 @@ def chassis(body=None,
                 intersection()(
                     circle(r=radius-3.0), 
                     square([width, 2*radius], center=True)) +
-                pcb_plate_fixings(hole()(M2.cut())))
+                pcb_plate_fixings()(hole()(M2.cut())))
+    
+        def pcb_plate_mount_points(self):
+            return pcb_plate_fixing_positions()
     
         def pcb_plate(self):
             width = 2.0*(radius - arch_width - min_wall)
             
             return (self.pcb_plate_blank() +
-                    mirror([0,1,0])(frontmost([70,50])(union()(
-                        *(translate(p)(insert_pillar(height=3.0, fixing=M2)) 
-                          for p in corners(66,46))))) +
-                    frontmost(raspberrypi.zero.d)(union()(
-                        *(translate(p)(insert_pillar(height=3.0, fixing=M2_5)) 
+                    hole()(linear_extrude(min_wall)(
+                        circle())) +
+                    mirror([0,1,0])(
+                        self.frontmost([nucleo32.socket.d[1]+14, nucleo32.socket.d[0]])(
+                            rotate([0,0,90])(union()(
+                        *(translate(p)(insert_pillar(height=8.0, fixing=M2))
+                          for p in nucleo32.socket.screw_holes()))))) +
+                    self.frontmost([40,60])(
+                        union()(*(translate(p)(insert_pillar(height=4.0, fixing=M2))
+                          for p in util.corners(36,56)))) +
+                    self.frontmost(raspberrypi.zero.d)(union()(
+                        *(translate(p)(insert_pillar(height=16.0, fixing=M2_5)) 
                           for p in raspberrypi.zero.holes))))
+
+        def fit_forward(self, d):
+            return _fit_forward(d)
+
+        def frontmost(self, d):
+            return _frontmost(d)
 
         def plates(self):
             return (base() + 
