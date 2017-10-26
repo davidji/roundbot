@@ -39,6 +39,13 @@ class AnyThread:
     
     def standoff(self, h, center=False):
         return pipe(h, ir=float(self.tap)/2, r=float(self.thread), center=center)
+    
+    def insert_standoff(self, h, insert_h=3.0):
+        return (
+            pipe(h=h,
+                 ir=self.thread/2.0, 
+                 r=self.insert/2.0+1.0) +
+             up(h-insert_h)(hole()(cylinder(d=self.insert, h=insert_h))))
         
 
 class MetricThread(AnyThread):
@@ -46,6 +53,19 @@ class MetricThread(AnyThread):
         AnyThread.__init__(self, thread, tap, insert)
         self.nut = MetricNut(thread)
 
+    def nut_capture_standoff(self, h, nut_capture_h=None):
+        nut_capture_h = nut_capture_h or self.nut.h
+        t = self.thread/2
+        return (linear_extrude(nut_capture_h + t)(offset(r=t)(self.nut.outline())) +
+                hole()(self.nut.capture(h=nut_capture_h)) +
+                pipe(ir=self.thread/2, t=t, h=h))
+
+    def screw_standoff(self, h, screw_head_h=None):
+        screw_head_h = screw_head_h or 0.6*self.thread
+        t = self.thread/2
+        return (cylinder(d=2*(self.thread+t), h=screw_head_h+t) +
+                hole()(cylinder(d=2*self.thread, h=screw_head_h)) +
+                pipe(ir=self.thread/2, t=t, h=h))
 
 def snapin(d1, d2, t, h1, h2):
     return (

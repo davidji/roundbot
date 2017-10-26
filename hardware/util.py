@@ -67,6 +67,8 @@ def pipe(h, r = None, ir = None, t = None, center=False):
     return (cylinder(r=r, h=h, center=center) -
             hole()(cylinder(r=ir, h=h, center=center)))
 
+def stadium(d, r, center=False):
+    return hull()(*(translate(p)(circle(r=r)) for p in corners(d[0]-2*r,d[1]-2*r)))
 
 def save(name, assembly):
     out_dir = sys.argv[1] if len(sys.argv) > 1 else os.curdir

@@ -1,6 +1,7 @@
 
 from solid import *
 from solid.utils import *
+import util
 
 class breakout:
     """3mm holes, 8mm back, 9mm apart"""
@@ -13,3 +14,6 @@ class micro:
         return back(7.5/2)(
             translate([0.5, 0.5, 0])(offset(r=0.5)(square([1.5, 6.5]))) + 
             square([1.25, 7.5]))
+
+if __name__ == '__main__':
+    util.save('micro-usb-outline', micro.cut())

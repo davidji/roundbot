@@ -5,7 +5,7 @@ import util
 from chassis import chassis
 from fixings import M2, M2_5, M3
 from nucleo import nucleo32
-from util import tube
+from util import pipe
 import raspberrypi, feather
 import itertools, copy
 
@@ -47,7 +47,7 @@ class InsertStandoff(Mount):
     
     def _mount(self):
         return (
-            tube(h=self.height, 
+            pipe(h=self.height, 
                  ir=self.fixing.thread/2.0, 
                  r=self.fixing.insert/2.0+1.0) +
              up(self.height-self.insert_height)(
@@ -73,7 +73,8 @@ class GenericBoard(Board):
             self,
             dimensions, 
             (InsertStandoff(p, M2, height + 2.0) 
-             for p in util.corners([d - 4.0 for d in dimensions])))
+             for p in util.corners(*[d - 4.0 for d in dimensions])),
+            position)
 
 class MiniBoard(Board):
     def __init__(self, position, height=2.0):
@@ -97,7 +98,7 @@ class FeatherBoard(Board):
         Board.__init__(
             self,
             feather.board.d,
-            (InsertStandoff(p, M3, height + 2.0) 
+            (InsertStandoff(p, M2, height + 2.0) 
              for p in feather.board.holes),
             position)
 
@@ -127,8 +128,6 @@ class Plate:
         return itertools.chain(*(board.mounts for board in self.boards))
     
     def assembly(self):
-        for mount in self.mounts():
-            print mount()
         return (
             linear_extrude(2.0)(
                 hull()(*(mount.outline() for mount in self.chassis_mounts.mounts)) +
@@ -136,14 +135,28 @@ class Plate:
                 hull()(*(mount.outline() for mount in self.mounts() if mount[0] > 0))) +
             union()(*(mount() for mount in self.mounts())))
 
+def nucleo32_feather_plate(chassis):
+    nucleo32_y = -chassis.fit_forward(nucleo32.socket.d)
+    feather_y = nucleo32_y + (nucleo32.socket.d[0] + feather.board.d[1])/2
+    raspberrypi_y = nucleo32_y + (nucleo32.socket.d[0] + raspberrypi.zero.d[1])/2
+    mini_y = feather_y + (feather.board.d[1] + util.inch_to_mm(1.0))/2 + 5
+    return Plate(chassis, [
+        Nucleo32Socket([0, nucleo32_y]),
+        FeatherBoard([0,feather_y]),
+        RaspberryPiZero([0, raspberrypi_y], height=18),
+        MiniBoard([+util.inch_to_mm(0.5), mini_y]),
+        MiniBoard([-util.inch_to_mm(0.5), mini_y])]).assembly()
+
+def nano_shield_plate(chassis):
+    sheild_y = chassis.fit_forward([60.0,40.0])
+    print sheild_y
+    return Plate(chassis, [
+        GenericBoard([60.0, 40.0], [0, sheild_y]),
+        GenericBoard([60.0, 40.0], [0, -sheild_y])]).assembly()
+
 def export_plates(chassis):
-    util.save('chassis-nucleo32-mount', Plate(chassis, [
-        RaspberryPiZero([0, 0], height=14.0),
-        FeatherBoard([0,0]),
-        MiniBoard([0, raspberrypi.zero.d[1]/2 + util.inch_to_mm(0.5)]),
-        MiniBoard([+18, raspberrypi.zero.d[1]/2 + util.inch_to_mm(0.5)]),
-        MiniBoard([-18, raspberrypi.zero.d[1]/2 + util.inch_to_mm(0.5)]),
-        Nucleo32Socket([0, -chassis.fit_forward(nucleo32.socket.d)])]).assembly())
+    util.save('chassis-nano-shield-mount', nano_shield_plate(chassis))
+    util.save('chassis-nucleo32-mount', nucleo32_feather_plate(chassis))
 
 def export_scad():
     export_plates(chassis())

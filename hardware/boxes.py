@@ -2,9 +2,10 @@
 import util
 from util import *
 from fixings import M3
-from solid.solidpython import linear_extrude
+from solid import linear_extrude
+from solid.utils import *
 from honeycomb import honeycomb
-from gtk.keysyms import cent
+from __builtin__ import staticmethod, setattr
 
 # A reminder: width = x, depth = y, left = -x, right = x, back = -y, forward = y
 
@@ -15,6 +16,75 @@ def mirror_corners(width, depth):
         right = mirror([1, 0])(left)
         return (left + right)
     return f
+
+
+class Projection:
+    def __init__(self, name, translate, rotate, axes):
+        self.name = name
+        self.translate = translate
+        self.rotate = rotate
+        self.axes = axes
+
+    def transform(self, id):
+        def transform(x):
+            return translate([ float(a*b)/2 for (a, b) in zip(self.translate, id)])(rotate(self.rotate)(x))
+        return transform
+
+class Face:
+    def __init__(self, projection, box):
+        self.projection = projection
+        self.box = box
+
+    def __call__(self):
+        return self.projection.transform(self.box.id)
+
+    def dimensions(self):
+        return [ self.box.id[axis] for axis in self.projection.axes]
+
+    def blank(self):
+        return linear_extrude(self.box.t)(
+            square([d + 2*self.box.t for d in self.dimensions()], center=True))
+
+class Box:       
+    top =    Projection("top",    UP_VEC,      (0, 0, 0),    (X, Y))
+    bottom = Projection("bottom", DOWN_VEC,    (180, 0, 0),  (X, Y))
+    left =   Projection("left",   LEFT_VEC,    (90, 0, 270), (Y, Z))
+    right =  Projection("right",  RIGHT_VEC,   (90, 0, 90),  (Y, Z))
+    front =  Projection("front",  FORWARD_VEC, (90, 0, 180), (X, Z))
+    back =   Projection("back",   BACK_VEC,    (90, 0, 0),   (X, Z))
+
+    projections = (top, bottom, left, right, front, back)
+
+    def __init__(self, id, t):
+        self.id = id
+        self.t = t
+        self.faces = {}
+        for p in Box.projections:
+            face = Face(p, self)
+            self.faces[p.name] = face
+            setattr(self, p.name, face)
+
+    def hole(self):
+        def h(x):
+            return hole()(down(ABIT)(linear_extrude(self.t + 2*ABIT)(x)))
+        return h
+
+    def assemble(self, **faces):
+        return union()(*(self.faces[key]()(value) for (key, value) in faces.items()))
+
+    def above(self, height, top, bottom, **sides):
+        return (
+            self.top()(top) + 
+            intersection()(
+                up((self.id[2] - height)/2)(cube([self.id[0]+2*self.t, self.id[1]+2*self.t, height], center=True)),
+                union()(*(self.faces[key]()(value) for (key, value) in sides.items()))))
+
+    def below(self, height, top, bottom, **sides):
+        return (
+            self.bottom()(bottom) +
+            intersection()(
+                down((self.id[2] - height)/2)(cube([self.id[0]+2*self.t, self.id[1]+2*self.t, height], center=True)),
+                union()(*(self.faces[key]()(value) for (key, value) in sides.items()))))
 
 def builder(id, t, base_height, lid_height):
     wallt = t
@@ -87,10 +157,14 @@ def builder(id, t, base_height, lid_height):
                    connector_insets(fixing, internal=False)),
                 (outline + tabs, z, h))
         
+        def left(self, profile, thickness=None, center=False):
+            def position(o):
+                return translate([center and -id[0]/2 or -id[0], id[1] + wallt, 0])(rotate([0, 0, -90])(o))
+            return Builder(self.box - position(cutout(profile, thickness)), self.bounds)
+
         def right(self, profile, thickness=None, center=False):
             def position(o):
                 return translate([center and id[0]/2 or 0, id[1] + wallt, 0])(rotate(90)(o))
-
             return Builder(self.box - position(cutout(profile, thickness)), self.bounds)
         
         def front(self, profile, center=False, thickness=None):
@@ -196,25 +270,40 @@ def top(id, t, center=False, vent=None, lip=None, connector=None, holes=None, we
     box = bottom(id, t, center, vent, lip, connector, True)
     return box
 
+def roundsquare(d, r):
+    w, d, h = d
+    return linear_extrude(h, center=True)(hull()(*(translate(p)(circle(r=r)) for p in corners(w,d))))
+
 def roundcube(d, r):
     w, d, h = d
-    
-    def roundsquare(w, d, h, rt):
-        return rotate(rt)(linear_extrude(h, center=True)(hull()(*(translate(p)(circle(r=r)) for p in corners(w,d)))))
-    
     return (union()(*(translate(p)(sphere(r=r)) for p in corners(w,d,h))) +
-            roundsquare(w, d, h, [0, 0, 0]) +
-            roundsquare(h, d, w, [0, 90, 0]) +
-            roundsquare(w, h, d, [90, 0, 0]))
+            roundsquare([w, d, h], r) +
+            rotate([0, 90, 0])(roundsquare([h, d, w], r)) +
+            rotate([90, 0, 0])(roundsquare([w, h, d], r)))
 
 def roundbox(d, r, t):
     return roundcube(d, r) - roundcube(d, r-t)
+
+DIVIDER_INTERLOCK = 1.0
+
+def organiser_divider(d, t=1.5, ri=5.0, ro=None):
+    ro = ro or ri+t
+    tubd = [(d[0]-3*t)/2.0-2*ri, d[1]-2*(ri+t), d[2]]
+    tub = hole()(up(ri + t)(roundcube(tubd, ri)))
+    return (roundsquare([d[0]-2*ro, d[1]-2*ro, d[2]], ro) + 
+            left(d[0]/4.0-t/2.0)(tub) + 
+            right(d[0]/4.0)(tub))
+
+ORGANIZER_DEPTH = 36.0
 
 def export_scad():
     util.save('roundcube', roundcube([30.0,20.0,10.0], 3))
     util.save('roundbox', intersection()(
         linear_extrude(13.0)(square([36.0, 26.0], center=True)),
         roundbox([30.0,20.0,10.0], 3, 2)))
+    util.save('organiser-divider-4x3', organiser_divider([64.5, 50.0, 36/2]))
+    util.save('organiser-divider-5x4-2layers', organiser_divider([54.0, 41.0, ORGANIZER_DEPTH/3]))
+    util.save('organiser-divider-5x4-3layers', organiser_divider([54.0, 41.0, ORGANIZER_DEPTH/3]))
 
 if __name__ == '__main__':
     export_scad()

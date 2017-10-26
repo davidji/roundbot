@@ -27,7 +27,7 @@ def honeycomb(r, t, w, h, center=False, inverted=False):
     def cols():
         if center:
             hcols = int(w/(4.0*r))
-            return range(-hcols - 1, hcols + 1)
+            return range(-hcols - 1, hcols + 2)
         else:
             return range(int(w/(2.0*r)))
 

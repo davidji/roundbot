@@ -1,9 +1,10 @@
+
 from solid import *
 from solid.utils import *
 import util
 from util import origin, corners, ABIT
 from fixings import M3
-import boxes
+import boxes, usb
 from honeycomb import honeycomb
 
 """
