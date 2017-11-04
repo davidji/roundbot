@@ -34,6 +34,12 @@ class cr123a:
         """Opening for inserting batteries in a flat surface"""
         return square(cr123a.d[0:2], True)
 
+class keystone209:
+    ear_t = inch_to_mm(0.062) + 1 
+    edge_t=1.6 # mm edge thickness specified by keystone 209
+    tab_t = inch_to_mm(0.25)
+    width=8.0 # mm width of keystone 209 (actually specified as 0.312 inches)
+    height=inch_to_mm(0.449)
 
 
 
@@ -59,19 +65,34 @@ class PanelHolder:
         self.spring_thickness = float(spring_thickness)
         self.cell_diameter = float(cell_diameter)
         self.wall_thickness = float(wall_thickness)
-        self.d = [self.cell_diameter + 2*self.wall_thickness, 
-                  self.cell_length + 2*self.wall_thickness, 
-                  self.cell_diameter + 2*self.wall_thickness]
         if cell_count and not cell_offsets:
             self.cell_offsets = [(cell - cell_count/2.0 + 0.5)*cell_diameter for cell in range(cell_count)]
         elif cell_offsets and not cell_count:
             self.cell_offsets = cell_offsets
         else:
             raise ValueError("Specify one of cell_count, cell_offsets")
+        self.d = [self.cell_diameter + 2*self.wall_thickness, 
+                  self._terminal_spacing(),
+                  self.cell_diameter + 2*self.wall_thickness]
 
 
     def _terminal_spacing(self):
         return self.cell_length + 2 * self.spring_thickness
+
+    def _battery_cavity_profile(self):
+        cell_radius = self.cell_diameter/2
+        return circle(r=cell_radius) + translate([-cell_radius, 0])(square([d, cell_radius + ABIT]))
+
+    def _outer_profile(self):
+        cell_radius = self.cell_diameter/2
+        shell_radius = cell_radius + self.wall_thickness
+        ir = cell_radius
+        d = 2*shell_radius
+        return (
+            intersection()(
+                circle(r=shell_radius),
+                translate([-shell_radius, -shell_radius])(square([d, shell_radius]))) +
+                translate([-shell_radius, 0])(square([d, ir])))
 
     def _cell_back(self):
         """This is the back shell for a single cell"""
@@ -79,39 +100,31 @@ class PanelHolder:
         cell_radius = self.cell_diameter/2
         shell_radius = cell_radius + self.wall_thickness
 
-        def battery_cavity_profile():
-            d = self.cell_diameter
-            return circle(r=cell_radius) + translate([-cell_radius, 0])(square([d, cell_radius + ABIT]))
-        
-        def outer_profile():
-            ir = cell_radius
-            d = 2*shell_radius
-            return (
-                intersection()(
-                    circle(r=shell_radius), 
-                    translate([-shell_radius, -shell_radius])(square([d, shell_radius]))) +
-                    translate([-shell_radius, 0])(square([d, ir])))
         
         def battery_cavity():
-            return hole()(linear_extrude(center=True, height=terminal_spacing)(battery_cavity_profile()))
+            return hole()(linear_extrude(center=True, height=terminal_spacing)(self._battery_cavity_profile()))
         
         def tab_slots():
             t = self.wall_thickness
-            edge_t=1.6 # mm edge thickness specified by keystone 209
-            ear_t = inch_to_mm(0.062) + 1
-            tab_t = inch_to_mm(0.25)
-            width=8.0 # mm width of keystone 209
-            height=inch_to_mm(0.449)
             r = cell_radius
             # Getting the contact in the middle is about getting the edge
-            # the connector sits on the right height. The edge needs to be
+            # the connector sitting at the right height. The edge needs to be
             # half the height above the centre.
             tab = mirror([0,1,0])(
-                translate([-width/2, height/2, -tab_t])(
-                    cube([width, shell_radius - height/2, edge_t + ear_t + tab_t])) +
-                up(edge_t + ear_t/2)(cube([width, height, ear_t], center=True)))
+                translate([-keystone209.width/2, keystone209.height/2, -keystone209.tab_t])(
+                    cube([keystone209.width, 
+                          keystone209.height, 
+                          keystone209.edge_t + keystone209.ear_t + keystone209.tab_t])) +
+                up(keystone209.edge_t + keystone209.ear_t/2)(
+                    cube([keystone209.width, 
+                          keystone209.height, 
+                          keystone209.ear_t], center=True)) +
+                down(keystone209.tab_t/2)(
+                    cube([keystone209.width, 
+                          keystone209.height, 
+                          keystone209.tab_t], center=True)))
             return hole()(up(terminal_spacing/2)(tab) +
-                    down(terminal_spacing/2)(mirror([0, 0, 1])(tab)))
+                          down(terminal_spacing/2)(mirror([0, 0, 1])(tab)))
         
         def velcro_slot():
             d = self.d[0] + ABIT
@@ -120,9 +133,8 @@ class PanelHolder:
         
         def shell():
             # The shell, and everything it depends on is constructed vertically
-            return (linear_extrude(center=True,
-                                   height=terminal_spacing+2*self.wall_thickness)
-                    (outer_profile()) +
+            return (linear_extrude(height=terminal_spacing+2*self.wall_thickness, center=True)
+                    (self._outer_profile()) +
                     battery_cavity() +
                     tab_slots())
 
@@ -130,7 +142,7 @@ class PanelHolder:
 
     def back(self, t = 2.0):
         """Back shell for the panel holder"""
-        return union()(*(translate([offset, 0, 0])(self._cell_back()) for offset in self.cell_offsets))
+        return union()(*(translate([offset, 0, 0])(self._cell_back() ) for offset in self.cell_offsets))
 
     def _cell_cutouts(self):
        return (translate([offset, 0, 0])(
@@ -190,3 +202,12 @@ class PanelHolder:
                 hole()(union()(*(translate(p)(fixing.cut()) for p in self._screw_positions(fixing)))) -
                 right(self.cell_offsets[-1] + self.cell_diameter/2)(circle(d=10.0))) +
             union()(*(translate(p)(hook) for p in self._hook_positions(hook_width))))
+
+class InternalHolder(PanelHolder):
+    def _battery_cavity_profile(self):
+        return circle(d=self.cell_diameter)
+    
+    def _outer_profile(self):
+        return circle(d=self.cell_diameter+2*self.wall_thickness)
+
+
