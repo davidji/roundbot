@@ -26,7 +26,7 @@ using namespace sexps;
 using namespace slip;
 using namespace motor;
 
-Serial serial(SERIAL_TX, SERIAL_RX, 115200);
+Serial serial(serial_tx_pin, serial_rx_pin, 115200);
 MBedStreamWrapper serialwrapper(serial);
 SlipInput requests(serialwrapper);
 SlipOutput responses(serialwrapper);
@@ -39,22 +39,24 @@ const float wheelDiameter = 0.032;
 const float wheelBase = 0.083;
 const float stepLength = (pi*wheelDiameter)/(gearMotorRatio*encoderArms);
 
-Serial console(serial_tx_pin, serial_rx_pin);
-
 // Break/drive mode gives nice linear response, but the first 10% produces little to no movement.
 MotorOut leftMotor(motor_left_in1_pin, motor_left_in2_pin, BRAKE, 0.1, 1.0);
 MotorOut rightMotor(motor_right_in1_pin, motor_right_in2_pin, BRAKE, 0.1, 1.0);
 MotorEncoder leftEncoder(rotary_encoder_left_a_pin, rotary_encoder_left_b_pin);
 MotorEncoder rightEncoder(rotary_encoder_right_a_pin, rotary_encoder_right_b_pin);
 
-DifferentialDrive differential(Wheel(leftMotor, leftEncoder, stepLength), Wheel(rightMotor, rightEncoder, stepLength), wheelBase);
+DifferentialDrive differential(
+		Wheel(leftMotor, leftEncoder, stepLength),
+		Wheel(rightMotor, rightEncoder, stepLength), wheelBase);
 
 Timer testTimer;
 DigitalOut led1(LED1);
-I2C i2c(D4, D5);
-Timer rangeTimer;
-VL53L0X range(&i2c, &rangeTimer);
+I2C i2c(i2c_sda_pin, i2c_scl_pin);
+// Timer rangeTimer;
+// VL53L0X range(&i2c, &rangeTimer);
 // APDS9960 gesture(i2c);
+
+
 
 
 void drive(float left, float right) {
@@ -113,8 +115,7 @@ void motorsTestStep(float left, float right) {
 
 void motorsTest(float speed) {
     testTimer.start();
-    leftEncoder.start();
-    rightEncoder.start();
+    differential.start();
     motorsTestStep(0.0, 0.0); //stop
     motorsTestStep(speed, speed); // forward
     motorsTestStep(-speed, -speed); // backward
@@ -124,11 +125,8 @@ void motorsTest(float speed) {
     motorsTestStep(-speed, speed); // spin left
     motorsTestStep(0.0, 0.0); //stop
     testTimer.stop();
-    leftEncoder.stop();
-    rightEncoder.stop();
+    differential.stop();
 }
-
-
 
 void motorsTestSpeeds() {
     while(true) {
@@ -245,13 +243,13 @@ void shell() {
 }
 
 int main() {
-    console.baud(38400);
     i2c.frequency(400000);
     i2c.start();
-    range.init();
-    range.startContinuous();
-
-    led1 = true;
+    // range.init();
+    // range.startContinuous();
+    led1 = false;
+    commands.test();
+    led1 = false;
 
     shell();
 }

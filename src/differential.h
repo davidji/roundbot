@@ -18,8 +18,9 @@ using motor::Direction;
 class Wheel {
 public:
     MotorOut &out;
-private:
     MotorEncoder &encoder;
+    STM32AnalogIn in1, in2;
+private:
 
     /**
      * This is the distance on the circumference of the wheel for
@@ -27,13 +28,10 @@ private:
      */
     const float stepLength;
 
-    void step(Direction);
-
 public:
     Wheel(const Wheel &other);
     Wheel(MotorOut &_out, MotorEncoder &_encoder, float _stepLength);
 
-    void start();
     float read();
     float peek();
 };
@@ -55,19 +53,24 @@ private:
     /** control the overall power during turning */
     PID turningController;
 
-    Ticker ticker;
+    Ticker driveTicker;
+    Ticker encodingTicker;
 
     static constexpr timestamp_t pid_period_us = 1000;
     static constexpr float pid_period = ((float)pid_period_us)/1000000.0;
+    static constexpr timestamp_t encoder_period_us = 50;
+
 
     PID movingController;
 
+    void encoderTick(void);
     void turningTick(void);
     void movingTick(void);
 
 public:
     DifferentialDrive(Wheel left, Wheel right, float length);
     void start();
+    void stop();
     void turn(float radians);
     void move(float meters);
     const float pi = 3.1415927;

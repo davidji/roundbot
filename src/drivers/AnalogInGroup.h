@@ -9,7 +9,6 @@
 #define SRC_DRIVERS_ANALOGINGROUP_H_
 
 #include "mbed.h"
-#include "ch.hpp"
 #include "assert.h"
 #include "Ticker.h"
 
@@ -40,7 +39,7 @@ public:
 
 
 template<AnalogInDevice D>
-constexpr ADCDriver *analogInDriver();
+constexpr ADC_HandleTypeDef *analogInDriver();
 
 template <PinName P2>
 constexpr AnalogInChannel analogInChannel();

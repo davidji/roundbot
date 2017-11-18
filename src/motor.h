@@ -1,6 +1,7 @@
 
 #include <functional>
 #include "mbed.h"
+#include "STM32AnalogIn.h"
 
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
@@ -30,18 +31,17 @@ public:
 class MinMax {
 
 private:
-    AnalogIn in;
     float zero;
 public:
+    const PinName pin;
     volatile float minimum;
     volatile float maximum;
 
-    MinMax(PinName in);
-    bool read();
+    MinMax(PinName pin);
+    bool update(float value);
 };
 
 typedef enum direction: int { FORWARD = 1, BACKWARD = -1 } Direction;
-typedef FunctionPointerArg1<void, Direction> StepFunctionPointer;
 
 class MotorEncoder {
 
@@ -49,9 +49,6 @@ private:
     Ticker ticker;
     bool in1_prev_value = false;
     volatile long delta_r;
-    Callback<void (Direction)> stepCallback;
-
-    static constexpr timestamp_t period_us = 50;
 
 public:
     MinMax in1;
@@ -59,22 +56,10 @@ public:
     volatile long count_s;
 
     MotorEncoder(PinName in1, PinName in2);
-    void start();
-    void stop();
     long read();
     long peek();
-    void sample();
+    void update(float in1, float in2);
 
-    /**
-     * Attach a member function to be called by the encoder for each step
-     * forward.
-     *  @param tptr pointer to the object to call the member function on
-     *  @param mptr pointer to the member function to be called
-     */
-    template<typename T>
-    void step(T* tptr, void (T::*mptr)(Direction)) {
-        stepCallback.attach(tptr, mptr);
-    }
 };
 
 }; /* namespace motor */

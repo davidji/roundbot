@@ -339,7 +339,7 @@
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.149990277" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.54121539" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
-								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1096940598" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1096940598" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/."/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/cmsis"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/cmsis/TARGET_CORTEX_M"/>
@@ -599,7 +599,7 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos/rtx5/TARGET_CORTEX_M/TARGET_RTOS_M4_M7/TOOLCHAIN_GCC"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/tool-unity"/>
 								</option>
-								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1198905600" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.1198905600" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
 									<listOptionValue builtIn="false" value="DEVICE_I2CSLAVE=1"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
@@ -653,7 +653,7 @@
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.762536863" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1310559623" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
-								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.41298875" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
+								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.41298875" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/."/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/cmsis"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/cmsis/TARGET_CORTEX_M"/>
@@ -913,7 +913,7 @@
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/framework-mbed/rtos/rtx5/TARGET_CORTEX_M/TARGET_RTOS_M4_M7/TOOLCHAIN_GCC"/>
 									<listOptionValue builtIn="false" value="${HOME}/.platformio/packages/tool-unity"/>
 								</option>
-								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.884639970" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" valueType="definedSymbols">
+								<option id="org.eclipse.cdt.build.core.settings.holder.symbols.884639970" name="Symbols" superClass="org.eclipse.cdt.build.core.settings.holder.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="__MBED__=1"/>
 									<listOptionValue builtIn="false" value="DEVICE_I2CSLAVE=1"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>

@@ -81,7 +81,7 @@ class PanelHolder:
 
     def _battery_cavity_profile(self):
         cell_radius = self.cell_diameter/2
-        return circle(r=cell_radius) + translate([-cell_radius, 0])(square([d, cell_radius + ABIT]))
+        return circle(r=cell_radius) + translate([-cell_radius, 0])(square([self.cell_diameter, cell_radius + ABIT]))
 
     def _outer_profile(self):
         cell_radius = self.cell_diameter/2

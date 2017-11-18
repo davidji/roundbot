@@ -1,23 +1,24 @@
 #include "mbed.h"
 
 #ifdef TARGET_NUCLEO_F303K8
-const PinName serial_tx_pin = D0;
-const PinName serial_rx_pin = D1;
+const PinName serial_tx_pin = USBTX;
+const PinName serial_rx_pin = USBRX;
+const PinName motor_left_in1_pin = D1;
+const PinName motor_left_in2_pin = D0;
 const PinName unused_D2 = D2;
-const PinName motor_left_in1_pin = D3;
-const PinName motor_left_in2_pin = D4;
-const PinName motor_right_in1_pin = D5;
+const PinName unused_d3 = D3;
+const PinName i2c_sda_pin = D4;
+const PinName i2c_scl_pin = D5;
 const PinName distance_trig = D6;
-const PinName motor_right_in2_pin = D7;
 const PinName distance_echo = D8;
-const PinName unused_d9 = D9;
-const PinName unused_d10 = D10;
+const PinName motor_right_in1_pin = D9;
+const PinName motor_right_in2_pin = D10;
 const PinName rf24_mosi_pin = D11;
 const PinName rf24_miso_pin = D12;
+const PinName rf24_sck_pin = D13;
 const PinName reflectance_3_pin = A2;
 const PinName reflectance_2_pin = A1;
 const PinName reflectance_1_pin = A0;
-const PinName rf24_sck_pin = D13;
 
 const PinName rotary_encoder_right_b_pin = A3;
 const PinName rotary_encoder_right_a_pin = A4;

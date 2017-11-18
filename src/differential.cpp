@@ -10,12 +10,17 @@
 
 
 Wheel::Wheel(const Wheel& other)
-  : out(other.out), encoder(other.encoder), stepLength(other.stepLength) {
+  : out(other.out), encoder(other.encoder),
+	in1(other.encoder.in1.pin),
+	in2(other.encoder.in2.pin),
+	stepLength(other.stepLength) {
 }
 
 Wheel::Wheel(MotorOut& _out, MotorEncoder& _encoder, float _stepLength)
-    : out(_out), encoder(_encoder), stepLength(_stepLength) {
-    encoder.step(this, &Wheel::step);
+    : out(_out), encoder(_encoder),
+	  in1(_encoder.in1.pin, ADC_SAMPLETIME_1CYCLE_5),
+	  in2(_encoder.in2.pin, ADC_SAMPLETIME_1CYCLE_5),
+	  stepLength(_stepLength) {
 }
 
 
@@ -39,18 +44,27 @@ DifferentialDrive::DifferentialDrive(Wheel _left, Wheel _right, float _length)
 }
 
 void DifferentialDrive::start() {
-    left.start();
-    right.start();
+	encodingTicker.attach_us(callback(this, &DifferentialDrive::encoderTick), encoder_period_us);
+}
+
+void DifferentialDrive::stop() {
+	encodingTicker.detach();
+	driveTicker.detach();
+}
+
+void DifferentialDrive::encoderTick() {
+	left.encoder.update(left.in1.read(), left.in2.read());
+	right.encoder.update(right.in1.read(), right.in2.read());
 }
 
 void DifferentialDrive::turn(float radians) {
-    ticker.detach();
+    driveTicker.detach();
     left.read();
     right.read();
     turningController.setSetPoint(radians);
     turningController.setInputLimits(radians-pi, radians+pi);
     turningController.reset();
-    ticker.attach_us(callback(this, &DifferentialDrive::turningTick), pid_period_us);
+    driveTicker.attach_us(callback(this, &DifferentialDrive::turningTick), pid_period_us);
 }
 
 void DifferentialDrive::turningTick() {
@@ -63,18 +77,9 @@ void DifferentialDrive::turningTick() {
     left.out.drive(-output);
 }
 
-
-void Wheel::step(motor::Direction direction) {
-
-}
-
 float Wheel::read() {
     float steps = encoder.read();
     return steps*stepLength;
-}
-
-void Wheel::start() {
-    encoder.start();
 }
 
 float Wheel::peek() {
@@ -93,11 +98,11 @@ void DifferentialDrive::movingTick(void) {
 }
 
 void DifferentialDrive::move(float meters) {
-    ticker.detach();
+    driveTicker.detach();
     left.read();
     right.read();
     movingController.setSetPoint(meters);
     movingController.setInputLimits(meters-0.1, meters+0.1);
     movingController.reset();
-    ticker.attach_us(callback(this, &DifferentialDrive::movingTick), pid_period_us);
+    driveTicker.attach_us(callback(this, &DifferentialDrive::movingTick), pid_period_us);
 }

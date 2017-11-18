@@ -13,8 +13,12 @@ MotorOut::MotorOut(PinName out1pin, PinName out2pin, MotorMode initial_mode, flo
     switch(default_mode) {
     case BRAKE:
         brake();
+        break;
     case FREE:
         free();
+        break;
+    case DEFAULT:
+    	break;
     }
 }
 
@@ -64,24 +68,22 @@ void MotorOut::write(float in1v, float in2v) {
 
 
 
-MotorEncoder::MotorEncoder(PinName in1pin, PinName in2pin)
-: ticker(),
+MotorEncoder::MotorEncoder(PinName p1, PinName p2)
+: in1(p1), in2(p2),
+  ticker(),
   delta_r(0),
-  in1(in1pin),
-  in2(in2pin),
   count_s(0) {
 
 }
 
-MinMax::MinMax(PinName inpin)
-: in(AnalogIn(inpin)),
+MinMax::MinMax(PinName p)
+: pin(p),
   zero(0.5),
   minimum(1.0),
-  maximum(0.0)
-  { }
+  maximum(0.0) {
+}
 
-inline bool MinMax::read() {
-    float value = in.read();
+inline bool MinMax::update(float value) {
     if(maximum < value || minimum > value) {
         minimum = fmin(value, minimum);
         maximum = fmax(value, maximum);
@@ -90,11 +92,11 @@ inline bool MinMax::read() {
     return value > zero;
 }
 
-void MotorEncoder::sample() {
+void MotorEncoder::update(float in1v, float in2v) {
     count_s++;
-    bool in1_next_value = in1.read();
+    bool in1_next_value = in1.update(in1v);
     if(!in1_prev_value && in1_next_value) {
-        bool in2_value = in2.read();
+        bool in2_value = in2.update(in2v);
         delta_r += in2_value ? 1 : -1;
     }
 
@@ -109,14 +111,6 @@ long MotorEncoder::read() {
 
 long MotorEncoder::peek() {
     return delta_r;
-}
-
-void MotorEncoder::start() {
-    ticker.attach_us(Callback<void ()>(this, &MotorEncoder::sample), period_us);
-}
-
-void MotorEncoder::stop() {
-    ticker.detach();
 }
 
 }; /* namespace motor */
