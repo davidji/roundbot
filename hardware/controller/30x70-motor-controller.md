@@ -22,14 +22,20 @@ R7 >= R4*(VS - VD1)/1.24 - R4
 VS = 1.24*(R4+R7)/R4 + VD1
    = 6.865V
 
-That's not ideal, but OK.
-
-Also, If I choose R2 = 68K
+That's OK. Also, If I choose R2 = 68K
 
 VS2 = The minimum switch on voltage
     = 1.24*(R4+R2)/R4
     = 6.861V
 
 which matches very closely.
+
+The cathode current for IC1 (TS432A) is determined by R1. It needs to be > 80uA. The maximum value for
+R1 at 6.6V is then 82K. I seem to be getting away with less - and that's because the typical
+minimum is actually 20uA, but there's no point relying on that.
+
+The application circuit for the TS43A most like mine is the series pass regulator - because
+there's in effect no load. It has a capacitor between the cathode and reference, which
+wasn't in my first version of the design.
 
 
